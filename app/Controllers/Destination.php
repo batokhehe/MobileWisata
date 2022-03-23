@@ -6,6 +6,7 @@ use App\Models\DestinationModel;
 use App\Models\RateReviewModel;
 use App\Models\FavoriteModel;
 use App\Models\CategoryModel;
+use App\Models\MediaModel;
 
 class Destination extends BaseController
 {
@@ -19,15 +20,15 @@ class Destination extends BaseController
      */
     public function index()
     {
-        if (empty($this->user)) {
-            $response = [
-                'status'   => 401,
-                'error'    => true,
-                'messages' => 'Access denied',
-                'data'     => [],
-            ];
-            return $this->respondCreated($response);
-        }
+        // if (empty($this->user)) {
+        //     $response = [
+        //         'status'   => 401,
+        //         'error'    => true,
+        //         'messages' => 'Access denied',
+        //         'data'     => [],
+        //     ];
+        //     return $this->respondCreated($response);
+        // }
 
         $data = DestinationModel::getAll($this->request);
 
@@ -58,26 +59,30 @@ class Destination extends BaseController
         }
 
         $result = DestinationModel::findById($id);
+        
+        $result['favorite'] = FavoriteModel::findByIdWithUser($id, $this->user->data->id);
+        $result['rate'] = RateReviewModel::findAverageByDestinationId($id);
+        $result['category'] = CategoryModel::findById($id)['name'];
+        $result['media'] = MediaModel::findByDestinationId($id);
 
         $client = \Config\Services::curlrequest();
 
         if ($this->request->getGet('lat') && $this->request->getGet('long')) {
             $origin      = [$this->request->getGet('lat'), $this->request->getGet('long')];
             $destination = [$result['lat'], $result['long']];
-            $url         = 'https://maps.googleapis.com/maps/api/distancematrix/json?destinations='
+            $url         = 'https://maps.googleapis.com/maps/api/directions/json?mode=driving&sensor=false&destination='
                 . $destination[0] . ',' . $destination[1] .
-                '&origins='
+                '&origin='
                 . $origin[0] . ',' . $origin[1] .
                 '&key=AIzaSyBbzLLqcMjbMIiBdB3I0b_khv79IfZG5Ls';
             $response            = json_decode($client->request('GET', $url, [])->getBody());
-            $result['distance']  = $response->rows[0]->elements[0]->distance->text;
+            $distance = $response->routes[0]->legs[0];
+            $result['distance']  = $distance->distance->text;
+            $result['step']  = $distance->steps;
             $result['direction'] = 'https://www.google.com/maps?saddr='
                 . $origin[0] . ',' . $origin[1] .
                 '&daddr=' . $destination[0] . ',' . $destination[1];
         }
-        $result['favorite'] = FavoriteModel::findByIdWithUser($id, $this->user->data->id);
-        $result['rate'] = RateReviewModel::findAverageByDestinationId($id);
-        $result['category'] = CategoryModel::findById($id)['name'];
         if ($result) {
             $response = [
                 'status'   => 200,

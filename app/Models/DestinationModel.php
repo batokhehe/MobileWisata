@@ -98,9 +98,14 @@ class DestinationModel extends Model
         $model = new DestinationModel();
 
         $where = ['deleted_at' => null];
+        $whereIn = ['0', '1', '2', '3'];
 
-        if ($request->getGet('status')) {
-            $where['status'] = $request->getGet('status');
+        if ($request->getGet('intro')) {
+            $whereIn = ['1', '3'];
+        }
+
+        if ($request->getGet('home')) {
+            $whereIn = ['2', '3'];
         }
 
         if ($request->getGet('category')) {
@@ -112,7 +117,7 @@ class DestinationModel extends Model
             $like = $request->getGet('query');
         }
 
-        return $model->where($where)->like('name', $like)->findAll();
+        return $model->whereIn('status', $whereIn)->where($where)->like('name', $like)->findAll();
     }
 
     public static function findById($id)

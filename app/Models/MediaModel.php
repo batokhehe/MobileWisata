@@ -73,6 +73,12 @@ class MediaModel extends Model
         return $model->where([$model->primaryKey => $id])->where(['deleted_at' => null])->first();
     }
 
+    public static function findByDestinationId($id)
+    {
+        $model = new MediaModel();
+        return $model->where(['destination_id' => $id, 'deleted_at' => null])->findAll();
+    }
+
     public static function createNew($model, $request, $file_name, $file_path, $user)
     {
         return $model->insert([
