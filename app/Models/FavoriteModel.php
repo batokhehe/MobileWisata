@@ -30,16 +30,11 @@ class FavoriteModel extends Model
     // Validation
     protected $validationRules = [
         'destination_id' => 'required|is_destination_exists[destination_id]',
-        'user_id'        => 'required|is_user_exists[user_id]',
     ];
     protected $validationMessages = [
         'destination_id' => [
             'required'              => 'Destination is required',
             'is_destination_exists' => 'Destination is not exists',
-        ],
-        'user_id'        => [
-            'required'       => 'User is required',
-            'is_user_exists' => 'User is not exists',
         ],
     ];
     protected $skipValidation       = false;
@@ -56,7 +51,7 @@ class FavoriteModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public static function getAll($user, $request)
+    public static function getAll($user, $request, $limit, $page)
     {
         $db = db_connect();
         $where = ['user_id' => $user->data->id];
@@ -64,7 +59,7 @@ class FavoriteModel extends Model
         if ($request->getGet('query')) {
             $like = $request->getGet('query');
         }
-        return $db->table('v_favorite_list')->where($where)->like('destination_name', $like)->get()->getResult();
+        return $db->table('v_favorite_list')->where($where)->like('destination_name', $like)->orderBy('id', 'ASC')->get($limit, $limit * $page)->getResult();
     }
 
     public static function findById($id)
@@ -88,7 +83,7 @@ class FavoriteModel extends Model
 
         return $model->insert([
             'destination_id' => $request->getVar('destination_id'),
-            'user_id'        => $request->getVar('user_id'),
+            'user_id'        => $user->data->id,
         ]);
     }
 

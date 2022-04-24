@@ -32,6 +32,10 @@ $routes->setAutoRoute(true);
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::index');
+$routes->get('/location_post/(:num)', 'Home::location_post/$1');
+$routes->get('/blog_post/(:num)', 'Home::blog_post/$1');
+$routes->get('/location', 'Home::location');
+$routes->get('/blog_list', 'Home::blog_list');
 
 $routes->group('api', function ($routes) {
     $routes->post('register', 'User::register');
@@ -39,7 +43,6 @@ $routes->group('api', function ($routes) {
     $routes->get('profile', 'User::details');
     $routes->resource('user');
     $routes->resource('category');
-    $routes->resource('destination');
     $routes->resource('favorite');
     $routes->resource('rateReview');
     $routes->get('media', 'Media::index');
@@ -47,6 +50,31 @@ $routes->group('api', function ($routes) {
     $routes->post('media/(:num)', 'Media::update/$1');
     $routes->get('media/(:num)', 'Media::show/$1');
     $routes->delete('media/(:num)', 'Media::delete/$1');
+    $routes->get('destination', 'Destination::index');
+    $routes->post('destination', 'Destination::create');
+    $routes->post('destination/(:num)', 'Destination::update/$1');
+    $routes->get('destination/(:num)', 'Destination::show/$1');
+    $routes->delete('destination/(:num)', 'Destination::delete/$1');
+
+    $routes->get('headline/(:num)', 'Headline::show/$1');
+    $routes->post('headline/(:num)', 'Headline::update/$1');
+});
+
+$routes->group('admin', function ($routes) {
+    $routes->get('auth', 'Auth::index');
+    $routes->get('auth/login', 'Auth::login');
+    $routes->post('auth/login', 'Auth::login');
+    $routes->get('auth/logout', 'Auth::logout');
+
+    $routes->get('/', 'DestinationAdmin::index');
+    $routes->get('destination', 'DestinationAdmin::index');
+    $routes->get('destination/create', 'DestinationAdmin::create');
+    $routes->get('destination/edit/(:num)', 'DestinationAdmin::edit/$1');
+
+
+    $routes->get('headline', 'HeadlineAdmin::index');
+
+    $routes->get('media/create/(:num)', 'MediaAdmin::create/$1');
 });
 
 /*

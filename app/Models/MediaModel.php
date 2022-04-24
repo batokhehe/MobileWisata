@@ -61,9 +61,12 @@ class MediaModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public static function getAll()
+    public static function getAll($request)
     {
         $model = new MediaModel();
+        if ($request->getGet('destination')) {
+            $model->where('destination_id', $request->getGet('destination'));
+        }
         return $model->findAll();
     }
 

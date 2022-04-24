@@ -155,17 +155,18 @@ class User extends BaseController
                         'data' => $userdata,
                     );
 
+                    $data  = $userdata;
                     $token = JWT::encode($payload, $key);
+                    unset($data['password']);
 
                     $response = [
                         'status'   => 200,
                         'error'    => false,
                         'messages' => 'User logged In successfully',
-                        'data'     => [
-                            'token' => $token,
-                        ],
+                        'data'     => $data,
                     ];
-                    return $this->respondCreated($response);
+
+                    return $this->response->setHeader('AuthToken', $token)->setJSON($response);
                 } else {
 
                     $response = [
@@ -197,16 +198,14 @@ class User extends BaseController
 
         try {
             $decoded = JWT::decode($token, $key, array('HS256'));
-
+            unset($decoded->data->password);
             if ($decoded) {
 
                 $response = [
                     'status'   => 200,
                     'error'    => false,
                     'messages' => 'User details',
-                    'data'     => [
-                        'profile' => $decoded,
-                    ],
+                    'data'     => $decoded->data,
                 ];
                 return $this->respondCreated($response);
             }

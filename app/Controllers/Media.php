@@ -27,15 +27,17 @@ class Media extends BaseController
             return $this->respondCreated($response);
         }
 
-        $data = MediaModel::getAll();
+        $data = MediaModel::getAll($this->request);
 
         $response = [
-            'status'   => 200,
-            'error'    => null,
-            'messages' => $this->modulName . ' Data ' . count($data) . ' Found',
-            'data'     => $data,
+            'status'          => 200,
+            'error'           => null,
+            'messages'        => $this->modulName . ' Data ' . count($data) . ' Found',
+            'data'            => $data,
+            'recordsTotal'    => count($data),
+            'recordsFiltered' => count($data),
         ];
-        return $this->respond($response);
+        return $this->response->setStatusCode(200)->setJSON($response);
     }
 
     /**
@@ -157,7 +159,7 @@ class Media extends BaseController
                 ]);
             }
             $file_name = $this->request->getVar('link');
-            $file_path = '';
+            $file_path = $this->request->getVar('link');
         }
 
         if ($model->createNew($model, $this->request, $file_name, $file_path, $this->user) === false) {

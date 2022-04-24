@@ -18,11 +18,13 @@ class DestinationModel extends Model
         'id',
         'name',
         'description',
-        'image',
+        'image_portrait',
+        'image_landscape',
         'url',
         'lat',
         'long',
-        'status',
+        'status_apps',
+        'status_web',
         'category_id',
         'created_at',
         'updated_at',
@@ -40,11 +42,10 @@ class DestinationModel extends Model
     protected $validationRules = [
         'name'        => 'required',
         'description' => 'required',
-        'image'       => 'required',
         'url'         => 'required',
         'lat'         => 'required',
         'long'        => 'required',
-        'status'      => 'required',
+        'status_apps' => 'required',
         'category_id' => 'required|is_category_exists[category_id]',
     ];
     protected $validationMessages = [
@@ -54,9 +55,7 @@ class DestinationModel extends Model
         'description' => [
             'required' => 'Description is required',
         ],
-        'image'       => [
-            'required' => 'Image is required',
-        ],
+
         'url'         => [
             'required' => 'Url is required',
         ],
@@ -66,7 +65,7 @@ class DestinationModel extends Model
         'long'        => [
             'required' => 'Longitude is required',
         ],
-        'status'      => [
+        'status_apps' => [
             'required' => 'Status is required',
         ],
         'category_id' => [
@@ -88,7 +87,7 @@ class DestinationModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public static function getAll($request)
+    public static function getAll($request, $limit, $page, $query)
     {
         if ($request->getGet('popular')) {
             $db = db_connect();
@@ -97,7 +96,7 @@ class DestinationModel extends Model
 
         $model = new DestinationModel();
 
-        $where = ['deleted_at' => null];
+        $where   = ['deleted_at' => null];
         $whereIn = ['0', '1', '2', '3'];
 
         if ($request->getGet('intro')) {
@@ -112,12 +111,13 @@ class DestinationModel extends Model
             $where['category_id'] = $request->getGet('category');
         }
 
-        $like = '';
-        if ($request->getGet('query')) {
-            $like = $request->getGet('query');
-        }
+        return $model->whereIn('status_apps', $whereIn)->where($where)->like('name', $query)->orderBy('id', 'ASC')->get($limit, $page)->getResult();
+    }
 
-        return $model->whereIn('status', $whereIn)->where($where)->like('name', $like)->findAll();
+    public static function getAllCounter()
+    {
+        $model = new DestinationModel();
+        return count($model->select('id')->where('deleted_at', null)->findAll());
     }
 
     public static function findById($id)
@@ -126,35 +126,37 @@ class DestinationModel extends Model
         return $model->where([$model->primaryKey => $id])->where(['deleted_at' => null])->first();
     }
 
-    public static function createNew($model, $request, $user)
+    public static function createNew($model, $request, $image_portrait, $image_landscape, $user)
     {
         return $model->insert([
-            'name'        => $request->getVar('name'),
-            'description' => $request->getVar('description'),
-            'image'       => $request->getVar('image'),
-            'url'         => $request->getVar('url'),
-            'lat'         => $request->getVar('lat'),
-            'long'        => $request->getVar('long'),
-            'status'      => $request->getVar('status'),
-            'category_id' => $request->getVar('category_id'),
+            'name'            => $request->getVar('name'),
+            'description'     => $request->getVar('description'),
+            'image_portrait'  => $image_portrait,
+            'image_landscape' => $image_landscape,
+            'url'             => $request->getVar('url'),
+            'lat'             => $request->getVar('lat'),
+            'long'            => $request->getVar('long'),
+            'status_apps'     => $request->getVar('status_apps'),
+            'category_id'     => $request->getVar('category_id'),
 
-            'created_at'  => date('Y-m-d H:i:s'),
+            'created_at'      => date('Y-m-d H:i:s'),
         ]);
     }
 
-    public static function updateData($id, $model, $request, $user)
+    public static function updateData($id, $model, $image_portrait, $image_landscape, $request, $user)
     {
         return $model->update($id, [
-            'name'        => $request->getVar('name'),
-            'description' => $request->getVar('description'),
-            'image'       => $request->getVar('image'),
-            'url'         => $request->getVar('url'),
-            'lat'         => $request->getVar('lat'),
-            'long'        => $request->getVar('long'),
-            'status'      => $request->getVar('status'),
-            'category_id' => $request->getVar('category_id'),
+            'name'            => $request->getVar('name'),
+            'description'     => $request->getVar('description'),
+            'image_portrait'  => $image_portrait,
+            'image_landscape' => $image_landscape,
+            'url'             => $request->getVar('url'),
+            'lat'             => $request->getVar('lat'),
+            'long'            => $request->getVar('long'),
+            'status'          => $request->getVar('status'),
+            'category_id'     => $request->getVar('category_id'),
 
-            'updated_at'  => date('Y-m-d H:i:s'),
+            'updated_at'      => date('Y-m-d H:i:s'),
         ]);
     }
 

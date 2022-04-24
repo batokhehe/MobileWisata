@@ -2,11 +2,12 @@
 
 namespace App\Controllers;
 
-use App\Models\DestinationModel;
-use App\Models\RateReviewModel;
-use App\Models\FavoriteModel;
 use App\Models\CategoryModel;
+use App\Models\ConfigModel;
+use App\Models\DestinationModel;
+use App\Models\FavoriteModel;
 use App\Models\MediaModel;
+use App\Models\RateReviewModel;
 
 class Destination extends BaseController
 {
@@ -30,15 +31,38 @@ class Destination extends BaseController
         //     return $this->respondCreated($response);
         // }
 
-        $data = DestinationModel::getAll($this->request);
+        $limit = 0;
+        $page  = 0;
+        $query = '';
+
+        if ($this->request->getGet('limit') || $this->request->getGet('page')) {
+            $limit = $this->request->getGet('limit');
+            $page  = $limit * $this->request->getGet('page');
+        }
+        if ($this->request->getGet('query')) {
+            $query = $this->request->getGet('query');
+        }
+
+        if ($this->request->getGet('length') || $this->request->getGet('start')) {
+            $limit = $this->request->getGet('length');
+            $page  = $this->request->getGet('start');
+        }
+        if ($this->request->getGet('search')) {
+            $query = $this->request->getGet('search')['value'];
+        }
+
+        $data    = DestinationModel::getAll($this->request, $limit, $page, $query);
+        $counter = DestinationModel::getAllCounter();
 
         $response = [
-            'status'   => 200,
-            'error'    => null,
-            'messages' => $this->modulName . ' Data ' . count($data) . ' Found',
-            'data'     => $data,
+            'status'          => 200,
+            'error'           => null,
+            'messages'        => $this->modulName . ' Data ' . count($data) . ' Found',
+            'data'            => $data,
+            'recordsTotal'    => $counter,
+            'recordsFiltered' => $counter,
         ];
-        return $this->respond($response);
+        return $this->response->setStatusCode(200)->setJSON($response);
     }
 
     /**
@@ -59,11 +83,11 @@ class Destination extends BaseController
         }
 
         $result = DestinationModel::findById($id);
-        
+
         $result['favorite'] = FavoriteModel::findByIdWithUser($id, $this->user->data->id);
-        $result['rate'] = RateReviewModel::findAverageByDestinationId($id);
+        $result['rate']     = RateReviewModel::findAverageByDestinationId($id);
         $result['category'] = CategoryModel::findById($id)['name'];
-        $result['media'] = MediaModel::findByDestinationId($id);
+        $result['media']    = MediaModel::findByDestinationId($id);
 
         $client = \Config\Services::curlrequest();
 
@@ -76,9 +100,9 @@ class Destination extends BaseController
                 . $origin[0] . ',' . $origin[1] .
                 '&key=AIzaSyBbzLLqcMjbMIiBdB3I0b_khv79IfZG5Ls';
             $response            = json_decode($client->request('GET', $url, [])->getBody());
-            $distance = $response->routes[0]->legs[0];
+            $distance            = $response->routes[0]->legs[0];
             $result['distance']  = $distance->distance->text;
-            $result['step']  = $distance->steps;
+            $result['step']      = $distance->steps;
             $result['direction'] = 'https://www.google.com/maps?saddr='
                 . $origin[0] . ',' . $origin[1] .
                 '&daddr=' . $destination[0] . ',' . $destination[1];
@@ -119,7 +143,7 @@ class Destination extends BaseController
                 'messages' => 'Access denied',
                 'data'     => [],
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(401)->setJSON($response);
         }
 
         $model = new DestinationModel();
@@ -131,24 +155,68 @@ class Destination extends BaseController
                 'message' => $this->validator->getErrors(),
                 'data'    => [],
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(500)->setJSON($response);
         }
 
-        if ($model->createNew($model, $this->request, $this->user) === false) {
-            $response = [
+        if (!$this->request->getFile('image_portrait') || !$this->request->getFile('image_landscape')) {
+            return $this->respondCreated([
+                'status'  => 500,
+                'error'   => true,
+                'message' => 'Image field is required',
+                'data'    => [],
+            ]);
+        }
+
+        if (empty($this->request->getFile('image_portrait')) || empty($this->request->getFile('image_landscape'))) {
+            return $this->respondCreated([
+                'status'  => 500,
+                'error'   => true,
+                'message' => 'Image field is required',
+                'data'    => [],
+            ]);
+        }
+
+        $config = ConfigModel::findById('image', 'destination');
+        $path   = ConfigModel::findById('path', 'general');
+
+        $file_1        = $this->request->getFile('image_portrait');
+        $tmp_name_1    = $file_1->getName();
+        $temp_1        = explode('.', $tmp_name_1);
+        $newfilename_1 = md5(round(microtime(true))) . '.' . end($temp_1);
+
+        $file_2        = $this->request->getFile('image_landscape');
+        $tmp_name_2    = $file_2->getName();
+        $temp_2        = explode('.', $tmp_name_2);
+        $newfilename_2 = md5(round(microtime(true))) . '_21.' . end($temp_2);
+
+        $image_portrait  = "";
+        $image_landscape = "";
+        if ($file_1->move($config['path'], $newfilename_1) && $file_2->move($config['path'], $newfilename_2)) {
+            $image_portrait  = $path['path'] . $config['path'] . $newfilename_1;
+            $image_landscape = $path['path'] . $config['path'] . $newfilename_2;
+        } else {
+            return $this->response->setStatusCode(500)->setJSON([
+                'status'  => 500,
+                'error'   => true,
+                'message' => 'Failed to upload image',
+                'data'    => [],
+            ]);
+        }
+        if ($model->createNew($model, $this->request, $image_portrait, $image_landscape, $this->user) === false) {
+            return $this->response->setStatusCode(500)->setJSON([
                 'status'   => 500,
                 'error'    => true,
                 'messages' => $this->modulName . ' Gagal Tersimpan',
                 'params'   => $model->errors(),
-            ];
+            ]);
         } else {
-            $response = [
+            return $this->response->setStatusCode(200)->setJSON([
                 'status'   => 200,
                 'error'    => null,
-                'messages' => $this->modulName . ' Berhasil Tersimpan '];
+                'messages' => $this->modulName . ' Berhasil Tersimpan ',
+            ]);
         }
 
-        return $this->respondCreated($response);
     }
 
     /**

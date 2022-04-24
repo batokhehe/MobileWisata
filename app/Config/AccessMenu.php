@@ -1,0 +1,41 @@
+<?php
+
+namespace Config;
+
+class AccessMenu
+{
+    public static function delimiter()
+    {
+        return ',';
+    }
+
+    public static function menu()
+    {
+        return [
+            'destination' => [
+                'slug'   => 'destination',
+                'index'  => 'index',
+                'action' => ['index', 'detail', 'create', 'update', 'delete'],
+                'access' => 'index, detail, create, update, delete',
+            ],
+            'headline' => [
+                'slug'   => 'headline',
+                'index'  => 'index',
+                'action' => ['index'],
+                'access' => 'index',
+            ],
+            'media' => [
+                'slug'   => 'media',
+                'index'  => 'index',
+                'action' => ['index', 'detail', 'create', 'update', 'delete'],
+                'access' => 'index, detail, create, update, delete',
+            ],
+            'blog' => [
+                'slug'   => 'blog',
+                'index'  => 'index',
+                'action' => ['index', 'detail', 'create', 'update', 'delete'],
+                'access' => 'index, detail, create, update, delete',
+            ],
+        ];
+    }
+}

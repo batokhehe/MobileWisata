@@ -26,7 +26,7 @@ class Favorite extends BaseController
             return $this->respondCreated($response);
         }
 
-        $data = FavoriteModel::getAll($this->user, $this->request);
+        $data = FavoriteModel::getAll($this->user, $this->request, $this->request->getGet('limit'), $this->request->getGet('page'));
 
         $response = [
             'status'   => 200,
