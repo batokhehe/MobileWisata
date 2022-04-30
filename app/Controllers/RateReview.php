@@ -26,7 +26,33 @@ class RateReview extends BaseController
             return $this->respondCreated($response);
         }
 
-        $data = RateReviewModel::getAll($this->request);
+        $limit = 0;
+        $page  = 0;
+        $query = '';
+
+        if ($this->request->getGet('limit') || $this->request->getGet('page')) {
+            $limit = $this->request->getGet('limit');
+            $page  = $limit * $this->request->getGet('page');
+        }
+        if ($this->request->getGet('query')) {
+            $query = $this->request->getGet('query');
+        }
+
+        if ($this->request->getGet('length') || $this->request->getGet('start')) {
+            $limit = $this->request->getGet('length');
+            $page  = $this->request->getGet('start');
+        }
+        if ($this->request->getGet('search')) {
+            $query = $this->request->getGet('search')['value'];
+        }
+
+        $data = RateReviewModel::getAll($this->request, $limit, $page, $query);
+
+        for ($i = 0; $i < count($data); $i++) {
+            if ($this->user->data->id == $data[$i]['user_id']) {
+                $data[$i]['editable'] = true;
+            }
+        }
 
         $response = [
             'status'   => 200,

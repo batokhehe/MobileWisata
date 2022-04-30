@@ -8,7 +8,8 @@ function timestamp()
 function middleware($context, $slug)
 {
     if (!$context->loggedIn()) {
-        return redirect()->to('/admin/auth/login');
+        header('Location: auth');
+        die;
     }
     //     if (!$_ci->securitylib->check_access('index', $slug)) {
     //         // show_404();

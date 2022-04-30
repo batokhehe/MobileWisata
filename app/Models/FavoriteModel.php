@@ -53,9 +53,9 @@ class FavoriteModel extends Model
 
     public static function getAll($user, $request, $limit, $page)
     {
-        $db = db_connect();
+        $db    = db_connect();
         $where = ['user_id' => $user->data->id];
-        $like = '';
+        $like  = '';
         if ($request->getGet('query')) {
             $like = $request->getGet('query');
         }
@@ -87,8 +87,8 @@ class FavoriteModel extends Model
         ]);
     }
 
-    public static function softDelete($id, $model)
+    public static function softDelete($id, $user, $model)
     {
-        return $model->delete($id);
+        return $model->where(['destination_id' => $id, 'user_id' => $user->data->id])->delete();
     }
 }

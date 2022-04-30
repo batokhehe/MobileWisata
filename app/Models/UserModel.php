@@ -60,7 +60,7 @@ class UserModel extends Model
     public static function findById($id)
     {
         $model = new UserModel();
-        return $model->where([$model->primaryKey => $id])->where(['deleted_at' => 'null'])->first();
+        return $model->where([$model->primaryKey => $id])->where(['deleted_at' => null])->first();
     }
 
     public static function softDelete($id, $model, $user)

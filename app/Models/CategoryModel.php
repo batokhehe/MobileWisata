@@ -57,10 +57,16 @@ class CategoryModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public static function getAll()
+    public static function getAll($request, $limit, $page, $query)
     {
         $model = new CategoryModel();
-        return $model->where(['deleted_at' => null])->findAll();
+        return $model->where(['deleted_at' => null])->like('name', $query)->orderBy('id', 'ASC')->get($limit, $page)->getResult();
+    }
+
+    public static function getAllCounter()
+    {
+        $model = new CategoryModel();
+        return count($model->select('id')->where('deleted_at', null)->findAll());
     }
 
     public static function findById($id)

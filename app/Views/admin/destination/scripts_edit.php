@@ -78,7 +78,7 @@
                 var form = $('form')[0]; // You need to use standard javascript object here
                 var formData = new FormData(form);
                 $.ajax({
-                    url: "<?php echo base_url() . '/api/destination' ?>",
+                    url: "<?php echo base_url() . '/api/destination/' . $id ?>",
                     type: 'post',
                     data: formData,
                     processData: false,

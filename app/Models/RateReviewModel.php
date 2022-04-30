@@ -69,14 +69,18 @@ class RateReviewModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public static function getAll($request)
+    public static function getAll($request, $limit, $page, $query)
     {
-        $model = new RateReviewModel();
+        $db = db_connect();
         $where = ['deleted_at' => null];
         if ($request->getGet('destination')) {
             $where['destination_id'] = $request->getGet('destination');
         }
-        return $model->where($where)->findAll();
+        if ($request->getGet('query')) {
+            $where['rate'] = $request->getGet('query');
+        }
+
+        return $db->table('v_rate_review')->where($where)->orderBy('id', 'ASC')->get($limit, $page)->getResultArray();
     }
 
     public static function findById($id)
@@ -97,7 +101,7 @@ class RateReviewModel extends Model
             'rate'           => $request->getVar('rate'),
             'review'         => $request->getVar('review'),
             'destination_id' => $request->getVar('destination_id'),
-            'user_id'        => $request->getVar('user_id'),
+            'user_id'        => $user->data->id,
 
             'created_at'     => date('Y-m-d H:i:s'),
         ]);
@@ -109,7 +113,7 @@ class RateReviewModel extends Model
             'rate'           => $request->getVar('rate'),
             'review'         => $request->getVar('review'),
             'destination_id' => $request->getVar('destination_id'),
-            'user_id'        => $request->getVar('user_id'),
+            'user_id'        => $user->data->id,
 
             'updated_at'     => date('Y-m-d H:i:s'),
         ]);

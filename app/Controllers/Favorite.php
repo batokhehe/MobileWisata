@@ -178,16 +178,16 @@ class Favorite extends BaseController
         }
 
         // check availability
-        if (!$model->findById($id)) {
-            return $this->respondCreated([
-                'status'  => 404,
-                'error'   => true,
-                'message' => 'Designated data to delete not found',
-                'data'    => [],
-            ]);
-        }
+        // if (!$model->findById($id)) {
+        //     return $this->respondCreated([
+        //         'status'  => 404,
+        //         'error'   => true,
+        //         'message' => 'Designated data to delete not found',
+        //         'data'    => [],
+        //     ]);
+        // }
 
-        $result = $model->softDelete($id, $model);
+        $result = $model->softDelete($id, $this->user, $model);
 
         if ($result === false) {
             $response = [

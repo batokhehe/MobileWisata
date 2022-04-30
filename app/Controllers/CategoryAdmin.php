@@ -7,13 +7,13 @@ use App\Libraries\IonAuth;
 use App\Libraries\MenuLib;
 use App\Libraries\SecurityLib;
 
-class DestinationAdmin extends AdminBaseController
+class CategoryAdmin extends AdminBaseController
 {
     public function __construct()
     {
-        $this->data['view']     = 'admin/destination';
-        $this->data['menu']     = 'Destination';
-        $this->data['slug']     = 'destination';
+        $this->data['view']     = 'admin/category';
+        $this->data['menu']     = 'Category';
+        $this->data['slug']     = 'category';
         $this->data['required'] = '<span style="color:red">* Required</span></br></br>';
         helper('custom');
         $IonAuth = new IonAuth();

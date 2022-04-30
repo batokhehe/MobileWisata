@@ -2,8 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Models\ConfigModel;
 use App\Models\UserModel;
-use Exception;
 use \Firebase\JWT\JWT;
 
 class User extends BaseController
@@ -57,9 +57,6 @@ class User extends BaseController
             'password' => [
                 'required' => 'Password is required',
             ],
-            'image'    => [
-                'required' => 'Image is required',
-            ],
             'address'  => [
                 'required' => 'Address is required',
             ],
@@ -82,7 +79,6 @@ class User extends BaseController
             'email'    => $this->request->getVar('email'),
             'phone'    => $this->request->getVar('phone'),
             'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
-            'image'    => $this->request->getVar('image'),
             'address'  => $this->request->getVar('address'),
         ];
 
@@ -189,28 +185,58 @@ class User extends BaseController
         }
     }
 
+    public function forgot_password()
+    {
+        $rules = [
+            'email' => 'required|valid_email|min_length[6]',
+        ];
+
+        $messages = [
+            'email' => [
+                'required'    => 'Email required',
+                'valid_email' => 'Email is not in format',
+            ],
+        ];
+
+        if (!$this->validate($rules, $messages)) {
+
+            $response = [
+                'status'  => 500,
+                'error'   => true,
+                'message' => $this->validator->getErrors(),
+                'data'    => [],
+            ];
+
+            return $this->respondCreated($response);
+
+        }
+
+        $userModel = new UserModel();
+
+        $userdata = $userModel->where('email', $this->request->getVar('email'))->first();
+
+        if (empty($userdata)) {
+            $response = [
+                'status'   => 500,
+                'error'    => true,
+                'messages' => 'Email not found',
+                'data'     => [],
+            ];
+            return $this->response->setStatusCode(500)->setJSON($response);
+        }
+
+        $response = [
+            'status'   => 200,
+            'error'    => false,
+            'messages' => 'E-mail Reset Password has been sent',
+            'data'     => [],
+        ];
+        return $this->response->setStatusCode(200)->setJSON($response);
+    }
+
     public function details()
     {
-        $key        = $this->getKey();
-        $authHeader = $this->request->getHeader('Authorization');
-        $authHeader = $authHeader->getValue();
-        $token      = $authHeader;
-
-        try {
-            $decoded = JWT::decode($token, $key, array('HS256'));
-            unset($decoded->data->password);
-            if ($decoded) {
-
-                $response = [
-                    'status'   => 200,
-                    'error'    => false,
-                    'messages' => 'User details',
-                    'data'     => $decoded->data,
-                ];
-                return $this->respondCreated($response);
-            }
-        } catch (Exception $ex) {
-
+        if (empty($this->user)) {
             $response = [
                 'status'   => 401,
                 'error'    => true,
@@ -219,36 +245,55 @@ class User extends BaseController
             ];
             return $this->respondCreated($response);
         }
+
+        $userModel = new UserModel();
+        $data      = $userModel->findById($this->user->data->id);
+        unset($data['password']);
+
+        $response = [
+            'status'   => 200,
+            'error'    => false,
+            'messages' => 'User details',
+            'data'     => $data,
+        ];
+        return $this->respondCreated($response);
+
     }
 
-    public function update($id = null)
+    public function change_profile()
     {
+        if (empty($this->user)) {
+            $response = [
+                'status'   => 401,
+                'error'    => true,
+                'messages' => 'Access denied',
+                'data'     => [],
+            ];
+            return $this->respondCreated($response);
+        }
+
         $rules = [
-            'name'     => 'required',
-            'email'    => 'required|valid_email|is_unique[user.email]|min_length[6]',
-            'phone'    => 'required',
-            'password' => 'required',
-            'image'    => 'required',
-            'address'  => 'required',
+            'name'    => 'required',
+            'email'   => 'required',
+            'phone'   => 'required',
+            'image'   => 'required',
+            'address' => 'required',
         ];
 
         $messages = [
-            'name'     => [
+            'name'    => [
                 'required' => 'Name is required',
             ],
-            'email'    => [
+            'email'   => [
                 'required' => 'Email is required',
             ],
-            'phone'    => [
+            'phone'   => [
                 'required' => 'Phone is required',
             ],
-            'password' => [
-                'required' => 'Password is required',
-            ],
-            'image'    => [
+            'image'   => [
                 'required' => 'Image is required',
             ],
-            'address'  => [
+            'address' => [
                 'required' => 'Address is required',
             ],
         ];
@@ -265,16 +310,105 @@ class User extends BaseController
 
         $userModel = new UserModel();
 
+        $config = ConfigModel::findById('image', 'user');
+        $path   = ConfigModel::findById('path', 'general');
+
+        $file        = $this->request->getFile('image');
+        $tmp_name    = $file->getName();
+        $temp        = explode('.', $tmp_name);
+        $newfilename = md5(round(microtime(true))) . '.' . strtolower(end($temp));
+
+        $image = "";
+        if ($file->move($config['path'], $newfilename)) {
+            $image = $path['path'] . $config['path'] . $newfilename;
+        } else {
+            return $this->response->setStatusCode(500)->setJSON([
+                'status'  => 500,
+                'error'   => true,
+                'message' => 'Failed to upload image',
+                'data'    => [],
+            ]);
+        }
+
         $data = [
-            'name'     => $this->request->getVar('name'),
-            'email'    => $this->request->getVar('email'),
-            'phone'    => $this->request->getVar('phone'),
-            'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
-            'image'    => $this->request->getVar('image'),
-            'address'  => $this->request->getVar('address'),
+            'name'    => $this->request->getVar('name'),
+            'email'   => $this->request->getVar('email'),
+            'phone'   => $this->request->getVar('phone'),
+            'image'   => $image,
+            'address' => $this->request->getVar('address'),
         ];
 
-        $userModel->update($id, $data);
+        if ($this->request->getVar('password')) {
+            $data['password'] = password_hash($this->request->getVar('password'), PASSWORD_DEFAULT);
+        }
+
+        $userModel->update($this->user->data->id, $data);
+
+        $response = [
+            'status'   => 200,
+            'error'    => false,
+            'messages' => 'Successfully, user has been updated',
+            'data'     => [],
+        ];
+
+        return $this->respondCreated($response);
+    }
+
+    public function change_password()
+    {
+        if (empty($this->user)) {
+            $response = [
+                'status'   => 401,
+                'error'    => true,
+                'messages' => 'Access denied',
+                'data'     => [],
+            ];
+            return $this->respondCreated($response);
+        }
+
+        $rules = [
+            'password'     => 'required',
+            'old_password' => 'required',
+        ];
+
+        $messages = [
+            'password'     => [
+                'required' => 'Password is required',
+            ],
+            'old_password' => [
+                'required' => 'Old Password is required',
+            ],
+        ];
+
+        if (!$this->validate($rules, $messages)) {
+
+            return $this->response->setStatusCode(500)->setJSON([
+                'status'  => 500,
+                'error'   => true,
+                'message' => $this->validator->getErrors(),
+                'data'    => [],
+            ]);
+        }
+
+        $userModel = new UserModel();
+
+        $userdata = $userModel->where('id', $this->user->data->id)->first();
+
+        if (!password_verify($this->request->getVar('old_password'), $userdata['password'])) {
+            return $this->response->setStatusCode(500)->setJSON([
+                'status'  => 500,
+                'error'   => true,
+                'message' => 'Wrong Old Password',
+                'data'    => [],
+            ]);
+        }
+
+        $data = [
+            'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
+        ];
+
+        $userModel = new UserModel();
+        $userModel->update($this->user->data->id, $data);
 
         $response = [
             'status'   => 200,

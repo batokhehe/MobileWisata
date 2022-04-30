@@ -39,6 +39,8 @@ class BaseController extends ResourceController
      */
     protected $helpers;
 
+    protected $user;
+
     /**
      * Constructor.
      */

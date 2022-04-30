@@ -94,7 +94,7 @@ class Destination extends BaseController
         if ($this->request->getGet('lat') && $this->request->getGet('long')) {
             $origin      = [$this->request->getGet('lat'), $this->request->getGet('long')];
             $destination = [$result['lat'], $result['long']];
-            $url         = 'https://maps.googleapis.com/maps/api/directions/json?mode=driving&sensor=false&destination='
+            $url         = 'https://maps.googleapis.com/maps/api/directions/json?language=id&mode=driving&sensor=false&destination='
                 . $destination[0] . ',' . $destination[1] .
                 '&origin='
                 . $origin[0] . ',' . $origin[1] .
@@ -182,12 +182,12 @@ class Destination extends BaseController
         $file_1        = $this->request->getFile('image_portrait');
         $tmp_name_1    = $file_1->getName();
         $temp_1        = explode('.', $tmp_name_1);
-        $newfilename_1 = md5(round(microtime(true))) . '.' . end($temp_1);
+        $newfilename_1 = md5(round(microtime(true))) . '.' . strtolower(end($temp_1));
 
         $file_2        = $this->request->getFile('image_landscape');
         $tmp_name_2    = $file_2->getName();
         $temp_2        = explode('.', $tmp_name_2);
-        $newfilename_2 = md5(round(microtime(true))) . '_21.' . end($temp_2);
+        $newfilename_2 = md5(round(microtime(true))) . '_21.' . strtolower(end($temp_2));
 
         $image_portrait  = "";
         $image_landscape = "";

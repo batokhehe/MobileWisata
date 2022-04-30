@@ -41,6 +41,9 @@ $routes->group('api', function ($routes) {
     $routes->post('register', 'User::register');
     $routes->post('login', 'User::login');
     $routes->get('profile', 'User::details');
+    $routes->post('change-profile', 'User::change_profile');
+    $routes->post('change-password', 'User::change_password');
+    $routes->post('forgot-password', 'User::forgot_password');
     $routes->resource('user');
     $routes->resource('category');
     $routes->resource('favorite');
@@ -62,7 +65,7 @@ $routes->group('api', function ($routes) {
 
 $routes->group('admin', function ($routes) {
     $routes->get('auth', 'Auth::index');
-    $routes->get('auth/login', 'Auth::login');
+    $routes->get('auth/login', 'Auth::login' , ['as' => 'login_admin_page']);
     $routes->post('auth/login', 'Auth::login');
     $routes->get('auth/logout', 'Auth::logout');
 
@@ -75,6 +78,10 @@ $routes->group('admin', function ($routes) {
     $routes->get('headline', 'HeadlineAdmin::index');
 
     $routes->get('media/create/(:num)', 'MediaAdmin::create/$1');
+
+    $routes->get('category', 'CategoryAdmin::index');
+    $routes->get('category/create', 'CategoryAdmin::create');
+    $routes->get('category/edit/(:num)', 'CategoryAdmin::edit/$1');
 });
 
 /*

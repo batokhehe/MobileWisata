@@ -26,15 +26,38 @@ class Category extends BaseController
             return $this->respondCreated($response);
         }
 
-        $data = CategoryModel::getAll();
+        $limit = 0;
+        $page  = 0;
+        $query = '';
+
+        if ($this->request->getGet('limit') || $this->request->getGet('page')) {
+            $limit = $this->request->getGet('limit');
+            $page  = $limit * $this->request->getGet('page');
+        }
+        if ($this->request->getGet('query')) {
+            $query = $this->request->getGet('query');
+        }
+
+        if ($this->request->getGet('length') || $this->request->getGet('start')) {
+            $limit = $this->request->getGet('length');
+            $page  = $this->request->getGet('start');
+        }
+        if ($this->request->getGet('search')) {
+            $query = $this->request->getGet('search')['value'];
+        }
+
+        $data    = CategoryModel::getAll($this->request, $limit, $page, $query);
+        $counter = CategoryModel::getAllCounter();
 
         $response = [
-            'status'   => 200,
-            'error'    => null,
-            'messages' => $this->modulName . ' Data ' . count($data) . ' Found',
-            'data'     => $data,
+            'status'          => 200,
+            'error'           => null,
+            'messages'        => $this->modulName . ' Data ' . count($data) . ' Found',
+            'data'            => $data,
+            'recordsTotal'    => $counter,
+            'recordsFiltered' => $counter,
         ];
-        return $this->respond($response);
+        return $this->response->setStatusCode(200)->setJSON($response);
     }
 
     /**
@@ -51,7 +74,7 @@ class Category extends BaseController
                 'messages' => 'Access denied',
                 'data'     => [],
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(401)->setJSON($response);
         }
 
         $result = CategoryModel::findById($id);
@@ -63,7 +86,7 @@ class Category extends BaseController
                 'messages' => $this->modulName . ' Found',
                 'data'     => $result,
             ];
-            return $this->respond($response);
+            return $this->response->setStatusCode(200)->setJSON($response);
         } else {
             return $this->failNotFound('No ' . $this->modulName . ' Found with id ' . $id);
         }
@@ -92,7 +115,7 @@ class Category extends BaseController
                 'messages' => 'Access denied',
                 'data'     => [],
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(401)->setJSON($response);
         }
 
         $model = new CategoryModel();
@@ -104,7 +127,7 @@ class Category extends BaseController
                 'message' => $this->validator->getErrors(),
                 'data'    => [],
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(500)->setJSON($response);
         }
 
         if ($model->createNew($model, $this->request, $this->user) === false) {
@@ -121,7 +144,7 @@ class Category extends BaseController
                 'messages' => $this->modulName . ' Berhasil Tersimpan '];
         }
 
-        return $this->respondCreated($response);
+        return $this->response->setStatusCode($response['status'])->setJSON($response);
     }
 
     /**
@@ -148,7 +171,7 @@ class Category extends BaseController
                 'messages' => 'Access denied',
                 'data'     => [],
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(401)->setJSON($response);
         }
 
         $model = new CategoryModel();
@@ -161,11 +184,11 @@ class Category extends BaseController
                 'message' => $this->validator->getErrors(),
                 'data'    => [],
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(500)->setJSON($response);
         }
 
         if (!$model->findById($id)) {
-            return $this->respondCreated([
+            return $this->response->setStatusCode(404)->setJSON([
                 'status'  => 404,
                 'error'   => true,
                 'message' => 'Designated data to update not found',
@@ -174,20 +197,18 @@ class Category extends BaseController
         }
 
         if ($model->updateData($id, $model, $this->request, $this->user) === false) {
-            $response = [
+            return $this->response->setStatusCode(500)->setJSON([
                 'status'   => 500,
                 'error'    => true,
                 'messages' => $this->modulName . ' Gagal Tersimpan',
                 'params'   => $model->errors(),
-            ];
+            ]);
         } else {
-            $response = [
+            return $this->response->setStatusCode(200)->setJSON([
                 'status'   => 200,
                 'error'    => null,
-                'messages' => $this->modulName . ' Berhasil Tersimpan '];
+                'messages' => $this->modulName . ' Berhasil Tersimpan ']);
         }
-
-        return $this->respondCreated($response);
     }
 
     /**
@@ -205,12 +226,12 @@ class Category extends BaseController
                 'messages' => 'Access denied',
                 'data'     => [],
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(401)->setJSON($response);
         }
 
         // check availability
         if (!$model->findById($id)) {
-            return $this->respondCreated([
+            return $this->response->setStatusCode(404)->setJSON([
                 'status'  => 404,
                 'error'   => true,
                 'message' => 'Designated data to delete not found',
@@ -221,18 +242,17 @@ class Category extends BaseController
         $result = $model->softDelete($id, $model, $this->user);
 
         if ($result === false) {
-            $response = [
+            return $this->response->setStatusCode(500)->setJSON([
                 'status'   => 500,
                 'error'    => true,
                 'messages' => 'Data Failed to Deleted',
-            ];
+            ]);
         } else {
-            $response = [
+            return $this->response->setStatusCode(200)->setJSON([
                 'status'   => 200,
                 'error'    => null,
                 'messages' => 'Data Deleted',
-            ];
+            ]);
         }
-        return $this->respond($response);
     }
 }

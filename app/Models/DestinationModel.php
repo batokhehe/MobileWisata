@@ -91,7 +91,7 @@ class DestinationModel extends Model
     {
         if ($request->getGet('popular')) {
             $db = db_connect();
-            return $db->query('SELECT * FROM v_popular_destination')->getResult();
+            return $db->table('v_popular_destination')->like('name', $query)->orderBy('id', 'ASC')->get($limit, $page)->getResult();
         }
 
         $model = new DestinationModel();
