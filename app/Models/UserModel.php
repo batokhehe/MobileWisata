@@ -78,13 +78,13 @@ class UserModel extends Model
     public static function getAll($request, $limit, $page, $query)
     {
         $model = new UserModel();
-        return $model->where(['deleted_at' => null])->like('name', $query)->orderBy('id', 'ASC')->get($limit, $page)->getResult();
+        return $model->like('name', $query)->orderBy('id', 'ASC')->get($limit, $page)->getResult();
     }
 
     public static function getAllCounter()
     {
         $model = new UserModel();
-        return count($model->select('id')->where('deleted_at', null)->findAll());
+        return count($model->select('id')->findAll());
     }
 
     public static function findById($id)

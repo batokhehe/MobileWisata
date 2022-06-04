@@ -25,6 +25,7 @@
             {data: 'name'},
             {data: 'email'},
             {data: 'phone'},
+            {data: 'status'},
             {
                'mRender': function (data, type, row) {
                 return '<a class="btn btn-xs bg-gradient-primary" href="<?php echo base_url(); ?>/admin/user/edit/' + row.id + '"><i class="fa fa-edit"></i></a>&nbsp; ' +

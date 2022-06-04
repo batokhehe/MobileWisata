@@ -15,10 +15,10 @@ class User extends BaseController
     {
         if (empty($this->user)) {
             $response = [
-                'status'   => 401,
-                'error'    => true,
+                'status'  => 401,
+                'error'   => true,
                 'message' => 'Access denied',
-                'data'     => new \stdClass,
+                'data'    => new \stdClass,
             ];
             return $this->respondCreated($response);
         }
@@ -46,10 +46,14 @@ class User extends BaseController
         $data    = UserModel::getAll($this->request, $limit, $page, $query);
         $counter = UserModel::getAllCounter();
 
+        foreach ($data as $d) {
+            $d->status = $d->deleted_at !== null ? 'In-active' : 'Active';
+        }
+
         $response = [
             'status'          => 200,
             'error'           => null,
-            'message'        => $this->modulName . ' Data ' . count($data) . ' Found',
+            'message'         => $this->modulName . ' Data ' . count($data) . ' Found',
             'data'            => $data,
             'recordsTotal'    => $counter,
             'recordsFiltered' => $counter,
@@ -109,10 +113,10 @@ class User extends BaseController
         $userModel->insert($data);
 
         $response = [
-            'status'   => 200,
-            'error'    => false,
+            'status'  => 200,
+            'error'   => false,
             'message' => 'Successfully, user has been registered',
-            'data'     => new \stdClass,
+            'data'    => new \stdClass,
         ];
 
         return $this->respondCreated($response);
@@ -180,10 +184,10 @@ class User extends BaseController
                     unset($data['password']);
 
                     $response = [
-                        'status'   => 200,
-                        'error'    => false,
+                        'status'  => 200,
+                        'error'   => false,
                         'message' => 'User logged In successfully',
-                        'data'     => $data,
+                        'data'    => $data,
                     ];
 
                     AuditTrialModel::createNew('Masuk ke aplikasi.', 'User', $userdata['id']);
@@ -192,19 +196,19 @@ class User extends BaseController
                 } else {
 
                     $response = [
-                        'status'   => 500,
-                        'error'    => true,
+                        'status'  => 500,
+                        'error'   => true,
                         'message' => 'Incorrect details',
-                        'data'     => new \stdClass,
+                        'data'    => new \stdClass,
                     ];
                     return $this->respondCreated($response);
                 }
             } else {
                 $response = [
-                    'status'   => 500,
-                    'error'    => true,
+                    'status'  => 500,
+                    'error'   => true,
                     'message' => 'User not found',
-                    'data'     => new \stdClass,
+                    'data'    => new \stdClass,
                 ];
                 return $this->respondCreated($response);
             }
@@ -243,10 +247,10 @@ class User extends BaseController
 
         if (empty($userdata)) {
             $response = [
-                'status'   => 500,
-                'error'    => true,
+                'status'  => 500,
+                'error'   => true,
                 'message' => 'Email not found',
-                'data'     => new \stdClass,
+                'data'    => new \stdClass,
             ];
             return $this->response->setStatusCode(500)->setJSON($response);
         }
@@ -271,10 +275,10 @@ class User extends BaseController
         $email->printDebugger(['headers']);
 
         $response = [
-            'status'   => 200,
-            'error'    => false,
+            'status'  => 200,
+            'error'   => false,
             'message' => 'E-mail Reset Password has been sent',
-            'data'     => new \stdClass,
+            'data'    => new \stdClass,
         ];
         return $this->response->setStatusCode(200)->setJSON($response);
     }
@@ -325,10 +329,10 @@ class User extends BaseController
         $userModel->update($userdata['id'], $data);
 
         $response = [
-            'status'   => 200,
-            'error'    => false,
+            'status'  => 200,
+            'error'   => false,
             'message' => 'Successfully, user has been updated',
-            'data'     => new \stdClass,
+            'data'    => new \stdClass,
         ];
 
         return $this->respondCreated($response);
@@ -338,10 +342,10 @@ class User extends BaseController
     {
         if (empty($this->user)) {
             $response = [
-                'status'   => 401,
-                'error'    => true,
+                'status'  => 401,
+                'error'   => true,
                 'message' => 'Access denied',
-                'data'     => new \stdClass,
+                'data'    => new \stdClass,
             ];
             return $this->respondCreated($response);
         }
@@ -351,10 +355,10 @@ class User extends BaseController
         unset($data['password']);
 
         $response = [
-            'status'   => 200,
-            'error'    => false,
+            'status'  => 200,
+            'error'   => false,
             'message' => 'User details',
-            'data'     => $data,
+            'data'    => $data,
         ];
         return $this->respondCreated($response);
 
@@ -364,10 +368,10 @@ class User extends BaseController
     {
         if (empty($this->user)) {
             $response = [
-                'status'   => 401,
-                'error'    => true,
+                'status'  => 401,
+                'error'   => true,
                 'message' => 'Access denied',
-                'data'     => new \stdClass,
+                'data'    => new \stdClass,
             ];
             return $this->respondCreated($response);
         }
@@ -450,10 +454,10 @@ class User extends BaseController
         if ($result) {
             AuditTrialModel::createNew('Profil anda telah dirubah.', 'User', $this->user->data->id);
             $response = [
-                'status'   => 200,
-                'error'    => false,
+                'status'  => 200,
+                'error'   => false,
                 'message' => 'Successfully, user has been updated',
-                'data'     => new \stdClass,
+                'data'    => new \stdClass,
             ];
 
             return $this->respondCreated($response);
@@ -471,10 +475,10 @@ class User extends BaseController
     {
         if (empty($this->user)) {
             $response = [
-                'status'   => 401,
-                'error'    => true,
+                'status'  => 401,
+                'error'   => true,
                 'message' => 'Access denied',
-                'data'     => new \stdClass,
+                'data'    => new \stdClass,
             ];
             return $this->respondCreated($response);
         }
@@ -526,10 +530,10 @@ class User extends BaseController
         $userModel->update($this->user->data->id, $data);
 
         $response = [
-            'status'   => 200,
-            'error'    => false,
+            'status'  => 200,
+            'error'   => false,
             'message' => 'Successfully, user has been updated',
-            'data'     => new \stdClass,
+            'data'    => new \stdClass,
         ];
 
         return $this->respondCreated($response);
@@ -545,10 +549,10 @@ class User extends BaseController
         $model = new UserModel();
         if (empty($this->user)) {
             $response = [
-                'status'   => 401,
-                'error'    => true,
+                'status'  => 401,
+                'error'   => true,
                 'message' => 'Access denied',
-                'data'     => new \stdClass,
+                'data'    => new \stdClass,
             ];
             return $this->respondCreated($response);
         }
@@ -567,14 +571,14 @@ class User extends BaseController
 
         if ($result === false) {
             $response = [
-                'status'   => 500,
-                'error'    => true,
+                'status'  => 500,
+                'error'   => true,
                 'message' => 'Data Failed to Deleted',
             ];
         } else {
             $response = [
-                'status'   => 200,
-                'error'    => null,
+                'status'  => 200,
+                'error'   => null,
                 'message' => 'Data Deleted',
             ];
         }
@@ -585,10 +589,10 @@ class User extends BaseController
     {
         if (empty($this->user)) {
             $response = [
-                'status'   => 401,
-                'error'    => true,
+                'status'  => 401,
+                'error'   => true,
                 'message' => 'Access denied',
-                'data'     => new \stdClass,
+                'data'    => new \stdClass,
             ];
             return $this->response->setStatusCode(401)->setJSON($response);
         }
@@ -597,10 +601,10 @@ class User extends BaseController
 
         if ($result) {
             $response = [
-                'status'   => 200,
-                'error'    => null,
+                'status'  => 200,
+                'error'   => null,
                 'message' => $this->modulName . ' Found',
-                'data'     => $result,
+                'data'    => $result,
             ];
             return $this->response->setStatusCode(200)->setJSON($response);
         } else {
@@ -626,10 +630,10 @@ class User extends BaseController
     {
         if (empty($this->user)) {
             $response = [
-                'status'   => 401,
-                'error'    => true,
+                'status'  => 401,
+                'error'   => true,
                 'message' => 'Access denied',
-                'data'     => new \stdClass,
+                'data'    => new \stdClass,
             ];
             return $this->response->setStatusCode(401)->setJSON($response);
         }
@@ -669,15 +673,15 @@ class User extends BaseController
         $password = password_hash($this->request->getVar('password'), PASSWORD_DEFAULT);
         if ($model->createNew($model, $this->request, $image, $password, $this->user) === false) {
             $response = [
-                'status'   => 500,
-                'error'    => true,
+                'status'  => 500,
+                'error'   => true,
                 'message' => $this->modulName . ' Gagal Tersimpan',
-                'params'   => $model->errors(),
+                'params'  => $model->errors(),
             ];
         } else {
             $response = [
-                'status'   => 200,
-                'error'    => null,
+                'status'  => 200,
+                'error'   => null,
                 'message' => $this->modulName . ' Berhasil Tersimpan '];
         }
 
@@ -703,10 +707,10 @@ class User extends BaseController
     {
         if (empty($this->user)) {
             $response = [
-                'status'   => 401,
-                'error'    => true,
+                'status'  => 401,
+                'error'   => true,
                 'message' => 'Access denied',
-                'data'     => new \stdClass,
+                'data'    => new \stdClass,
             ];
             return $this->response->setStatusCode(401)->setJSON($response);
         }
@@ -762,15 +766,15 @@ class User extends BaseController
 
         if ($model->updateData($id, $model, $this->request, $image, $password, $this->user) === false) {
             return $this->response->setStatusCode(500)->setJSON([
-                'status'   => 500,
-                'error'    => true,
+                'status'  => 500,
+                'error'   => true,
                 'message' => $this->modulName . ' Gagal Tersimpan',
-                'params'   => $model->errors(),
+                'params'  => $model->errors(),
             ]);
         } else {
             return $this->response->setStatusCode(200)->setJSON([
-                'status'   => 200,
-                'error'    => null,
+                'status'  => 200,
+                'error'   => null,
                 'message' => $this->modulName . ' Berhasil Tersimpan ']);
         }
     }
@@ -845,30 +849,30 @@ class User extends BaseController
                 unset($data['password']);
 
                 $response = [
-                    'status'   => 200,
-                    'error'    => false,
+                    'status'  => 200,
+                    'error'   => false,
                     'message' => 'User logged In successfully',
-                    'data'     => $data,
+                    'data'    => $data,
                 ];
 
                 return $this->response->setHeader('AuthToken', $token)->setJSON($response);
             } else {
 
                 $response = [
-                    'status'   => 500,
-                    'error'    => true,
+                    'status'  => 500,
+                    'error'   => true,
                     'message' => 'Incorrect details',
-                    'data'     => new \stdClass,
+                    'data'    => new \stdClass,
                 ];
                 return $this->respondCreated($response);
             }
         } else {
 
             $response = [
-                'status'   => 500,
-                'error'    => true,
+                'status'  => 500,
+                'error'   => true,
                 'message' => 'Incorrect details',
-                'data'     => new \stdClass,
+                'data'    => new \stdClass,
             ];
             return $this->respondCreated($response);
         }
