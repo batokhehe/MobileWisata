@@ -80,7 +80,13 @@ class RateReviewModel extends Model
             $where['rate'] = $request->getGet('query');
         }
 
-        return $db->table('v_rate_review')->where($where)->orderBy('id', 'ASC')->get($limit, $page)->getResultArray();
+        return $db->table('v_rate_review')->where($where)->orderBy('id', 'ASC')->get($limit, $page)->getResult();
+    }
+
+    public static function getAllCounter($destination_id)
+    {
+        $model = new RateReviewModel();
+        return count($model->select('id')->where(['deleted_at' => null, 'destination_id' => $destination_id])->findAll());
     }
 
     public static function findById($id)

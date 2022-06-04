@@ -117,78 +117,46 @@
                     </div>
                     <div class="row">
                         <div class="col-lg-5">
-                            <div class="cnt-box cnt-box-info headline" style="background: url('<?php echo base_url('assets/web/images/article-01.jpg') ?>');">
+                            <div class="cnt-box cnt-box-info headline" style="background: url('<?php echo $blog[0]->image; ?>');">
                                 <div class="bgOverlay"></div>
                                 <hr class="space-sm visible-sm" />
                                 <div class="title">
                                     <a href="#">
-                                        <p>Kota</p>
+                                        <p><?php echo $blog[0]->category_name; ?></p>
                                     </a>
-                                    <a href="<?php echo base_url('blog_post') ?>">
-                                        <h2 class="mb-2 mt-1">Labuan Bajo, Sepetak Surga yang Terletak di Indonesia Timur</h2>
+                                    <a href="<?php echo base_url('blog_post/' . $blog[0]->id) ?>">
+                                        <h2 class="mb-2 mt-1"><?php echo $blog[0]->title; ?></h2>
                                     </a>
-                                    <span>Februari 8, 2022</span>
+                                    <span><?php echo $blog[0]->created_at; ?></span>
                                 </div>
                                 <p>
-                                    Labuan Bajo dan Taman Nasional Komodo adalah satu entitas yang tidak dapat terpisahkan.
+                                    <?php echo strip_tags($blog[0]->description); ?>
                                 </p>
                             </div>
                         </div>
-                        <div class="col-lg-7">
-                            <ul class="slider controls-right" data-options="type:carousel,nav:true,perView:2,perViewSm:1,gap:30,controls:out">
-                                <li>
-                                    <div class="cnt-box cnt-box-info">
-                                        <a href="<?php echo base_url('blog_post') ?>" class="img-box">
-                                            <div class="thumb-img-box" style="background: url('<?php echo base_url('assets/web/images/article-04.jpg') ?>');"></div>
-                                        </a>
-                                        <div class="caption">
-                                            <a href="#"><span>Alam</span></a>
-                                            <a href="<?php echo base_url('blog_post') ?>">
-                                                <h2 class="my-1">Pasir Timbul Mekko, Pesona Flores Timur di Pulau Adonara</h2>
+                        <?php for ($i = 1; $i < count($blog); $i++) {?>
+                            <div class="col-lg-7">
+                                <ul class="slider controls-right" data-options="type:carousel,nav:true,perView:2,perViewSm:1,gap:30,controls:out">
+                                    <li>
+                                        <div class="cnt-box cnt-box-info">
+                                            <a href="<?php echo base_url('blog_post') ?>" class="img-box">
+                                                <div class="thumb-img-box" style="background: url('<?php echo $blog[$i]->image; ?>');"></div>
                                             </a>
-                                            <span>Februari 2, 2022</span>
-                                            <p>
-                                                Flores Timur, tepatnya di Pulau Adonara, terdapat hidden gems Nusa Tenggara Timur yang belum terlalu banyak dikunjungi wisatawan, yaitu Pulau Mekko. Pulau pasir timbul ini luasnya tak lebih dari satu kilometer persegi. Tak ada bangunan ataupun tumbuhan, hanya gundukan pasir yang timbul saat air laut surut dan tenggelam saat laut pasang.
-                                            </p>
+                                            <div class="caption">
+                                                <a href="#"><span><?php echo $blog[$i]->category_name; ?></span></a>
+                                                <a href="<?php echo base_url('blog_post/' . $blog[$i]->id) ?>">
+                                                    <h2 class="my-1"><?php echo $blog[$i]->title; ?></h2>
+                                                </a>
+                                                <span><?php echo $blog[$i]->created_at; ?></span>
+                                                <p>
+                                                    <?php echo strip_tags($blog[$i]->description); ?>
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="cnt-box cnt-box-info">
-                                        <a href="<?php echo base_url('blog_post') ?>" class="img-box">
-                                            <div class="thumb-img-box" style="background: url('<?php echo base_url('assets/web/images/article-02.jpg') ?>');"></div>
-                                        </a>
-                                        <div class="caption">
-                                            <a href="#"><span>Cerita Perjalanan</span></a>
-                                            <a href="<?php echo base_url('blog_post') ?>">
-                                                <h2 class="my-1">Gerbang Menuju Surga Dunia</h2>
-                                            </a>
-                                            <span>Februari 5, 2022</span>
-                                            <p>
-                                                Labuan Bajo merupakan sebuah surga tersembunyi yang ada di Indonesia bagian timur. Desa ini terletak di Kecamatan Komodo, Kabupaten Manggarai Barat, Provinsi Nusa Tenggara Timur yang berbatasan langsung dengan Nusa Tenggara Barat dan dipisahkan oleh Selat Sape.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="cnt-box cnt-box-info">
-                                        <a href="<?php echo base_url('blog_post') ?>" class="img-box">
-                                            <div class="thumb-img-box" style="background: url('<?php echo base_url('assets/web/images/article-03.jpg') ?>');"></div>
-                                        </a>
-                                        <div class="caption">
-                                            <a href="#"><span>Penginapan</span></a>
-                                            <a href="<?php echo base_url('blog_post') ?>">
-                                                <h2 class="my-1">Hotel dengan pemandangan laut yang indah.</h2>
-                                            </a>
-                                            <span>Februari 7, 2022</span>
-                                            <p>
-                                                Adalah La Cecile Komodo Hotel and Cafe yang terletak di Labuan Bajo, 750 meter dari Pantai Wae Rana,La Cecile Hotel & Cafe Komodo menyediakan akomodasi dengan restoran, parkir pribadi gratis, kolam renang outdoor musiman, dan bar. Akomodasi ini memiliki lounge bersama dan taman, serta berjarak 1,7 km dari Pantai Pede dan 2,5 km dari Pantai Pulau Kukusan. Hotel ini memiliki kamar keluarga.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        <?php }?>
                         <div class="col-12 text-center">
                             <a href="<?php echo base_url('blog_list') ?>" class="btn btn-sm btn-circle">Lihat Semua</a>
                         </div>
@@ -220,7 +188,7 @@
                                                 <h3><?php echo $p->name ?></h3>
                                             </div>
                                         </div>
-                                    <?php } ?>
+                                    <?php }?>
                                 </div>
                                 <div class="cnt-album-box">
                                     <p class="album-title"><span>...</span> <a>Album list</a></p>
@@ -533,131 +501,139 @@
                     <table class="table table-grid table-border table-6-md">
                         <tbody>
                             <tr>
-                                <td>
+                                <?php foreach ($guide as $g) { ?>
+                                 <td>
                                     <a href="#">
                                         <div class="icon-box icon-box-top align-center">
-                                            <div class="thumb-img-box" style="background: url('<?php echo base_url('assets/web/images/info-01.jpg') ?>');">
-                                                <h3><i class="lab la-gratipay"></i> InDOnesia CARE</h3>
+                                            <div class="thumb-img-box" style="background: url('<?php echo $g->image ?>');">
+                                                <h3><i class="lab <?php echo $g->icon ?>"></i> <?php echo $g->title ?></h3>
                                             </div>
                                             <div class="caption">
-                                                <p class="text-left">Kementerian Pariwisata dan Ekonomi Kreatif mempersembahkan InDOnesia CARE, sebuah simbol dukungan berupa panduan protokol kesehatan pariwisata yang mengedepankan usaha terbaik dalam mewujudkan kebersihan, kesehatan, keselamatan, dan kelestarian lingkungan bersama di destinasi pariwisata Indonesia.</p>
+                                                <p class="text-left"><?php echo $g->description ?></p>
                                             </div>
                                         </div>
                                     </a>
-                                </td>
-                                <td>
-                                    <a href="#">
-                                        <div class="icon-box icon-box-top align-center">
-                                            <div class="thumb-img-box" style="background: url('<?php echo base_url('assets/web/images/info-02.jpg') ?>');">
-                                                <h3><i class="las la-passport"></i> E-Visa</h3>
-                                            </div>
-                                            <div class="caption">
-                                                <p class="text-left">Pastikan untuk mempelajari semua persyaratan keimigrasian yang harus dipenuhi sebelum mengunjungi Indonesia, termasuk e-paspor dan e-visa.</p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="#">
-                                        <div class="icon-box icon-box-top align-center">
-                                            <div class="thumb-img-box" style="background: url('<?php echo base_url('assets/web/images/info-03.jpg') ?>');">
-                                                <h3><i class="las la-suitcase"></i> Informasi Umum</h3>
-                                            </div>
-                                            <div class="caption">
-                                                <p class="text-left">Temukan semua yang perlu Sobat Wisata ketahui tentang cara menuju ke sini, peraturan apa yang harus diperhatikan, dan banyak hal penting lainnya dalam mengatur rencana perjalanan Sobat Wisata ke Indonesia.</p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
+                                </td>   
+                            <?php } ?>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 
-        <!-- Modal Registration -->
-        <div class="modal fade-in" id="regModal" tabindex="-1" aria-labelledby="regModal" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="regModal">Registration</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body px-0">
-                        <form action="" class="">
-                            <div class="row m-0">
-                                <div class="col-lg-6 form-group">
-                                    <label>Name</label>
-                                    <input id="name" name="name" placeholder="Full name" type="text" class="input-text" required>
-                                </div>
-                                <div class="col-lg-6 form-group mt-0">
-                                    <label>Phone Number</label>
-                                    <input id="telp" name="phone" placeholder="0812345678" type="number" class="input-text" required>
-                                </div>
-                                <div class="col-lg-12 form-group mt-0">
-                                    <label>Email</label>
-                                    <input id="email" name="email" placeholder="myemail@mail.com" type="email" class="input-text" required>
-                                </div>
-                                <div class="col-lg-12 form-group mt-0">
-                                    <label>Password</label>
-                                    <input id="password" name="password" placeholder="Password" type="password" class="input-text" required>
-                                </div>
-                                <div class="col-lg-12 form-group mt-0">
-                                    <label>Confirm Password</label>
-                                    <input id="repassword" name="repassword" placeholder="Confirm Password" type="password" class="input-text" required>
-                                </div>
+    <!-- Modal Registration -->
+    <div class="modal fade-in" id="regModal" tabindex="-1" aria-labelledby="regModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="regModal">Registration</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body px-0">
+                    <form action="" class="">
+                        <div class="row m-0">
+                            <div class="col-lg-6 form-group">
+                                <label>Name</label>
+                                <input id="name" name="name" placeholder="Full name" type="text" class="input-text" required>
                             </div>
-                        </form>
+                            <div class="col-lg-6 form-group mt-0">
+                                <label>Phone Number</label>
+                                <input id="telp" name="phone" placeholder="0812345678" type="number" class="input-text" required>
+                            </div>
+                            <div class="col-lg-12 form-group mt-0">
+                                <label>Email</label>
+                                <input id="email" name="email" placeholder="myemail@mail.com" type="email" class="input-text" required>
+                            </div>
+                            <div class="col-lg-12 form-group mt-0">
+                                <label>Password</label>
+                                <input id="password" name="password" placeholder="Password" type="password" class="input-text" required>
+                            </div>
+                            <div class="col-lg-12 form-group mt-0">
+                                <label>Confirm Password</label>
+                                <input id="repassword" name="repassword" placeholder="Confirm Password" type="password" class="input-text" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer d-flex justify-content-between">
+                    <div class="form-checkbox justify-content-between">
+                        <input type="checkbox" id="check" name="check" value="check" required>
+                        <label for="check" class="pl-2 d-inline">You accept the terms of service and the privacy policy</label>
                     </div>
-                    <div class="modal-footer d-flex justify-content-between">
-                        <div class="form-checkbox justify-content-between">
-                            <input type="checkbox" id="check" name="check" value="check" required>
-                            <label for="check" class="pl-2 d-inline">You accept the terms of service and the privacy policy</label>
-                        </div>
-                        <div class="flex-fill text-right mt-2">
-                            <button class="btn btn-sm" type="submit">Submit</button>
-                        </div>
+                    <div class="flex-fill text-right mt-2">
+                        <button class="btn btn-sm" type="submit">Submit</button>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Modal Login -->
-        <div class="modal fade-in" id="loginModal" tabindex="-1" aria-labelledby="loginModal" aria-hidden="true">
+    <!-- Modal Login -->
+    <div class="modal fade-in" id="loginModal" tabindex="-1" aria-labelledby="loginModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModal">Login</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body px-0">
+                    <form action="" class="">
+                        <div class="row m-0">
+                            <div class="col-lg-12 form-group mt-0">
+                                <label>Email</label>
+                                <input id="email-login" name="email" placeholder="myemail@mail.com" type="email" class="input-text" required>
+                            </div>
+                            <div class="col-lg-12 form-group mt-0">
+                                <label>Password</label>
+                                <input id="password-login" name="password" placeholder="Password" type="password" class="input-text" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer d-flex justify-content-between">
+                    <div class="form-checkbox justify-content-between">
+                        <input type="checkbox" id="check" name="check" value="check" required>
+                        <label for="check" class="pl-2 d-inline">Remember me</label>
+                    </div>
+                    <div class="flex-fill text-right mt-2">
+                        <button class="btn btn-sm" type="submit">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <?php if(isset($reset_password)) { ?>
+        <div class="modal fade-in show" id="resetModal" tabindex="-1" aria-labelledby="resetModal" style="padding-right: 17px; display: block;" aria-modal="true">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="loginModal">Login</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body px-0">
-                        <form action="" class="">
+                <form id="reset_form">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="resetModal">Reset Password</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body px-0">
                             <div class="row m-0">
                                 <div class="col-lg-12 form-group mt-0">
-                                    <label>Email</label>
-                                    <input id="email-login" name="email" placeholder="myemail@mail.com" type="email" class="input-text" required>
-                                </div>
-                                <div class="col-lg-12 form-group mt-0">
-                                    <label>Password</label>
-                                    <input id="password-login" name="password" placeholder="Password" type="password" class="input-text" required>
+                                    <label>New Password</label>
+                                    <input id="password" name="password" placeholder="New Password" type="password" class="input-text" required="">
                                 </div>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-between">
-                        <div class="form-checkbox justify-content-between">
-                            <input type="checkbox" id="check" name="check" value="check" required>
-                            <label for="check" class="pl-2 d-inline">Remember me</label>
                         </div>
-                        <div class="flex-fill text-right mt-2">
-                            <button class="btn btn-sm" type="submit">Submit</button>
+                        <div class="modal-footer d-flex justify-content-between">
+                            <div class="flex-fill text-right mt-2">
+                                <button class="btn btn-sm" type="submit">Submit</button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
+    <?php } ?>

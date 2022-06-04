@@ -1,5 +1,6 @@
 <script type="application/javascript">
-    var table;
+    var media_table;
+    var rate_table;
 
     function deleteData(id){
         $.ajax({
@@ -49,7 +50,7 @@
             }
         });
 
-        table = $('.datatables').DataTable({
+        media_table = $('#media_table').DataTable({
             processing: true,
             searching: false,
             paging:false,
@@ -70,6 +71,25 @@
         ],
         order: [[ 1, "asc" ]]
     });
+
+        rate_table = $('#rate_table').DataTable({
+            processing: true,
+            searching: false,
+            paging:true,
+            serverSide: true,
+            ajax: {
+                url: "<?php echo base_url('api/rateReview?destination=' . $id); ?>",
+                type: "GET",
+                headers: {"Authorization": "<?php echo $session['token'] ?>"},
+            },
+            columns: [
+            {data: 'review'},
+            {data: 'rate'},
+            {data: 'name'},
+            {data: 'created_at'},
+            ],
+            order: [[ 1, "asc" ]]
+        });
 
         $("#form").validate({
             errorElement: 'span',

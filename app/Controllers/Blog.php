@@ -2,12 +2,13 @@
 
 namespace App\Controllers;
 
-use App\Models\RateReviewModel;
+use App\Models\BlogModel;
+use App\Models\ConfigModel;
 
-class RateReview extends BaseController
+class Blog extends BaseController
 {
 
-    public $modulName = 'RateReview';
+    public $modulName = 'Blog';
 
     /**
      * Return an array of resource objects, themselves in array format
@@ -21,7 +22,7 @@ class RateReview extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => new \stdClass,
+                'data'     => [],
             ];
             return $this->respondCreated($response);
         }
@@ -46,14 +47,8 @@ class RateReview extends BaseController
             $query = $this->request->getGet('search')['value'];
         }
 
-        $data    = RateReviewModel::getAll($this->request, $limit, $page, $query);
-        $counter = RateReviewModel::getAllCounter($this->request->getGet('destination'));
-
-        for ($i = 0; $i < count($data); $i++) {
-            if ($this->user->data->id == $data[$i]->user_id) {
-                $data[$i]->editable = true;
-            }
-        }
+        $data    = BlogModel::getAll($this->request, $limit, $page, $query);
+        $counter = BlogModel::getAllCounter();
 
         $response = [
             'status'          => 200,
@@ -78,12 +73,12 @@ class RateReview extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => new \stdClass,
+                'data'     => [],
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(401)->setJSON($response);
         }
 
-        $result = RateReviewModel::findById($id);
+        $result = BlogModel::findById($id);
 
         if ($result) {
             $response = [
@@ -92,7 +87,7 @@ class RateReview extends BaseController
                 'messages' => $this->modulName . ' Found',
                 'data'     => $result,
             ];
-            return $this->respond($response);
+            return $this->response->setStatusCode(200)->setJSON($response);
         } else {
             return $this->failNotFound('No ' . $this->modulName . ' Found with id ' . $id);
         }
@@ -119,24 +114,44 @@ class RateReview extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => new \stdClass,
+                'data'     => [],
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(401)->setJSON($response);
         }
 
-        $model = new RateReviewModel();
+        $model = new BlogModel();
 
         if (!$this->validate($model->validationRules, $model->validationMessages)) {
             $response = [
                 'status'  => 500,
                 'error'   => true,
                 'message' => $this->validator->getErrors(),
-                'data'    => [],
+                'data'    => new \stdClass,
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(500)->setJSON($response);
         }
 
-        if ($model->createNew($model, $this->request, $this->user) === false) {
+        $config = ConfigModel::findById('image', 'blog');
+        $path   = ConfigModel::findById('path', 'general');
+
+        $file        = $this->request->getFile('image');
+        $tmp_name    = $file->getName();
+        $temp        = explode('.', $tmp_name);
+        $newfilename = md5(round(microtime(true))) . '.' . strtolower(end($temp));
+
+        $image = "";
+        if ($file->move($config['path'], $newfilename)) {
+            $image = $path['path'] . $config['path'] . $newfilename;
+        } else {
+            return $this->response->setStatusCode(500)->setJSON([
+                'status'  => 500,
+                'error'   => true,
+                'message' => 'Failed to upload image',
+                'data'    => new \stdClass,
+            ]);
+        }
+
+        if ($model->createNew($model, $this->request, $image, $this->user) === false) {
             $response = [
                 'status'   => 500,
                 'error'    => true,
@@ -150,7 +165,7 @@ class RateReview extends BaseController
                 'messages' => $this->modulName . ' Berhasil Tersimpan '];
         }
 
-        return $this->respondCreated($response);
+        return $this->response->setStatusCode($response['status'])->setJSON($response);
     }
 
     /**
@@ -175,12 +190,12 @@ class RateReview extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => new \stdClass,
+                'data'     => [],
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(401)->setJSON($response);
         }
 
-        $model = new RateReviewModel();
+        $model = new BlogModel();
 
         if (!$this->validate($model->validationRules, $model->validationMessages)) {
 
@@ -188,35 +203,55 @@ class RateReview extends BaseController
                 'status'  => 500,
                 'error'   => true,
                 'message' => $this->validator->getErrors(),
-                'data'    => [],
+                'data'    => new \stdClass,
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(500)->setJSON($response);
         }
 
         if (!$model->findById($id)) {
-            return $this->respondCreated([
+            return $this->response->setStatusCode(404)->setJSON([
                 'status'  => 404,
                 'error'   => true,
                 'message' => 'Designated data to update not found',
-                'data'    => [],
+                'data'    => new \stdClass,
             ]);
         }
 
-        if ($model->updateData($id, $model, $this->request, $this->user) === false) {
-            $response = [
+        $image = '';
+        if ($this->request->getFile('image')) {
+            $config = ConfigModel::findById('image', 'blog');
+            $path   = ConfigModel::findById('path', 'general');
+
+            $file        = $this->request->getFile('image');
+            $tmp_name    = $file->getName();
+            $temp        = explode('.', $tmp_name);
+            $newfilename = md5(round(microtime(true))) . '.' . strtolower(end($temp));
+
+            if ($file->move($config['path'], $newfilename)) {
+                $image = $path['path'] . $config['path'] . $newfilename;
+            } else {
+                return $this->response->setStatusCode(500)->setJSON([
+                    'status'  => 500,
+                    'error'   => true,
+                    'message' => 'Failed to upload image',
+                    'data'    => new \stdClass,
+                ]);
+            }
+        }
+
+        if ($model->updateData($id, $model, $this->request, $image, $this->user) === false) {
+            return $this->response->setStatusCode(500)->setJSON([
                 'status'   => 500,
                 'error'    => true,
                 'messages' => $this->modulName . ' Gagal Tersimpan',
                 'params'   => $model->errors(),
-            ];
+            ]);
         } else {
-            $response = [
+            return $this->response->setStatusCode(200)->setJSON([
                 'status'   => 200,
                 'error'    => null,
-                'messages' => $this->modulName . ' Berhasil Tersimpan '];
+                'messages' => $this->modulName . ' Berhasil Tersimpan ']);
         }
-
-        return $this->respondCreated($response);
     }
 
     /**
@@ -226,42 +261,41 @@ class RateReview extends BaseController
      */
     public function delete($id = null)
     {
-        $model = new RateReviewModel();
+        $model = new BlogModel();
         if (empty($this->user)) {
             $response = [
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => new \stdClass,
+                'data'     => [],
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(401)->setJSON($response);
         }
 
         // check availability
         if (!$model->findById($id)) {
-            return $this->respondCreated([
+            return $this->response->setStatusCode(404)->setJSON([
                 'status'  => 404,
                 'error'   => true,
                 'message' => 'Designated data to delete not found',
-                'data'    => [],
+                'data'    => new \stdClass,
             ]);
         }
 
         $result = $model->softDelete($id, $model, $this->user);
 
         if ($result === false) {
-            $response = [
+            return $this->response->setStatusCode(500)->setJSON([
                 'status'   => 500,
                 'error'    => true,
                 'messages' => 'Data Failed to Deleted',
-            ];
+            ]);
         } else {
-            $response = [
+            return $this->response->setStatusCode(200)->setJSON([
                 'status'   => 200,
                 'error'    => null,
                 'messages' => 'Data Deleted',
-            ];
+            ]);
         }
-        return $this->respond($response);
     }
 }

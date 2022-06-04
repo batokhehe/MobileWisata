@@ -120,12 +120,38 @@
             </div>
         </div>
         <div class="card-body">
-            <table class="table table-bordered table-hover datatables" width="100%">
+            <table class="table table-bordered table-hover datatables" id="media_table" width="100%">
                 <thead>
                     <tr>
                         <th>Media Type</th>
                         <th>File Path</th>
                         <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+        </div>
+        <!-- /.card-footer-->
+    </div>
+    <!-- /.card -->
+
+     <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Rate & Review List</h3>
+            <div class="card-tools">
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-hover datatables" id="rate_table" width="100%">
+                <thead>
+                    <tr>
+                        <th>Review</th>
+                        <th>Rate</th>
+                        <th>Username</th>
+                        <th>Date</th>
                     </tr>
                 </thead>
             </table>

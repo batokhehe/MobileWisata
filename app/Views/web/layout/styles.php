@@ -1,4 +1,4 @@
-<link rel="icon" href="images/elements/favicon.png">
+<link rel="icon" href="<?php echo base_url(); ?>/assets/web/images/elements/favicon.png">
 <link rel="stylesheet" href="<?php echo base_url('assets/web/resources/css/bootstrap.min.css') ?>">
 <link rel="stylesheet" href="<?php echo base_url('assets/web/resources/css/bootstrap-grid.css') ?>">
 <link rel="stylesheet" href="<?php echo base_url('assets/web/resources/css/style.css') ?>">

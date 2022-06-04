@@ -3,12 +3,12 @@
 namespace App\Controllers;
 
 use App\Models\ConfigModel;
-use App\Models\MediaModel;
+use App\Models\GuideModel;
 
-class Media extends BaseController
+class Guide extends BaseController
 {
 
-    public $modulName = 'Media';
+    public $modulName = 'Guide';
 
     /**
      * Return an array of resource objects, themselves in array format
@@ -27,15 +27,36 @@ class Media extends BaseController
             return $this->respondCreated($response);
         }
 
-        $data = MediaModel::getAll($this->request);
+        $limit = 0;
+        $page  = 0;
+        $query = '';
+
+        if ($this->request->getGet('limit') || $this->request->getGet('page')) {
+            $limit = $this->request->getGet('limit');
+            $page  = $limit * $this->request->getGet('page');
+        }
+        if ($this->request->getGet('query')) {
+            $query = $this->request->getGet('query');
+        }
+
+        if ($this->request->getGet('length') || $this->request->getGet('start')) {
+            $limit = $this->request->getGet('length');
+            $page  = $this->request->getGet('start');
+        }
+        if ($this->request->getGet('search')) {
+            $query = $this->request->getGet('search')['value'];
+        }
+
+        $data    = GuideModel::getAll($this->request, $limit, $page, $query);
+        $counter = GuideModel::getAllCounter();
 
         $response = [
             'status'          => 200,
             'error'           => null,
             'messages'        => $this->modulName . ' Data ' . count($data) . ' Found',
             'data'            => $data,
-            'recordsTotal'    => count($data),
-            'recordsFiltered' => count($data),
+            'recordsTotal'    => $counter,
+            'recordsFiltered' => $counter,
         ];
         return $this->response->setStatusCode(200)->setJSON($response);
     }
@@ -54,10 +75,10 @@ class Media extends BaseController
                 'messages' => 'Access denied',
                 'data'     => new \stdClass,
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(401)->setJSON($response);
         }
 
-        $result = MediaModel::findById($id);
+        $result = GuideModel::findById($id);
 
         if ($result) {
             $response = [
@@ -66,7 +87,7 @@ class Media extends BaseController
                 'messages' => $this->modulName . ' Found',
                 'data'     => $result,
             ];
-            return $this->respond($response);
+            return $this->response->setStatusCode(200)->setJSON($response);
         } else {
             return $this->failNotFound('No ' . $this->modulName . ' Found with id ' . $id);
         }
@@ -95,10 +116,10 @@ class Media extends BaseController
                 'messages' => 'Access denied',
                 'data'     => new \stdClass,
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(401)->setJSON($response);
         }
 
-        $model = new MediaModel();
+        $model = new GuideModel();
 
         if (!$this->validate($model->validationRules, $model->validationMessages)) {
             $response = [
@@ -107,62 +128,30 @@ class Media extends BaseController
                 'message' => $this->validator->getErrors(),
                 'data'    => [],
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(500)->setJSON($response);
         }
 
-        $media_type = $this->request->getVar('media_type');
-        if ($media_type != 'youtube' && $media_type != 'video' && $media_type != 'image') {
-            $response = [
+        $config = ConfigModel::findById('image', 'guide');
+        $path   = ConfigModel::findById('path', 'general');
+
+        $file        = $this->request->getFile('image');
+        $tmp_name    = $file->getName();
+        $temp        = explode('.', $tmp_name);
+        $newfilename = md5(round(microtime(true))) . '.' . strtolower(end($temp));
+
+        $image = "";
+        if ($file->move($config['path'], $newfilename)) {
+            $image = $path['path'] . $config['path'] . $newfilename;
+        } else {
+            return $this->response->setStatusCode(500)->setJSON([
                 'status'  => 500,
                 'error'   => true,
-                'message' => 'Not Supported Media Type',
+                'message' => 'Failed to upload image',
                 'data'    => [],
-            ];
-            return $this->respondCreated($response);
+            ]);
         }
 
-        // Renaming file before upload
-        if ($media_type != 'youtube') {
-            if (!$this->request->getFile('media')) {
-                return $this->respondCreated([
-                    'status'  => 500,
-                    'error'   => true,
-                    'message' => 'Media field is required',
-                    'data'    => [],
-                ]);
-            }
-            $config        = ConfigModel::findById($media_type, 'destination');
-            $path          = ConfigModel::findById('path', 'general');
-            $file          = $this->request->getFile('media');
-            $profile_image = $file->getName();
-            $temp          = explode('.', $profile_image);
-            $newfilename   = round(microtime(true)) . '.' . end($temp);
-
-            if ($file->move($config['path'], $newfilename)) {
-                $file_name = $newfilename;
-                $file_path = $path['path'] . $config['path'] . $file_name;
-            } else {
-                return $this->respondCreated([
-                    'status'  => 500,
-                    'error'   => true,
-                    'message' => 'Failed to upload image',
-                    'data'    => [],
-                ]);
-            }
-        } else {
-            if (!$this->request->getVar('link')) {
-                return $this->respondCreated([
-                    'status'  => 500,
-                    'error'   => true,
-                    'message' => 'Youtube Link field is required',
-                    'data'    => [],
-                ]);
-            }
-            $file_name = $this->request->getVar('link');
-            $file_path = $this->request->getVar('link');
-        }
-
-        if ($model->createNew($model, $this->request, $file_name, $file_path, $this->user) === false) {
+        if ($model->createNew($model, $this->request, $image, $this->user) === false) {
             $response = [
                 'status'   => 500,
                 'error'    => true,
@@ -176,7 +165,7 @@ class Media extends BaseController
                 'messages' => $this->modulName . ' Berhasil Tersimpan '];
         }
 
-        return $this->respondCreated($response);
+        return $this->response->setStatusCode($response['status'])->setJSON($response);
     }
 
     /**
@@ -203,10 +192,10 @@ class Media extends BaseController
                 'messages' => 'Access denied',
                 'data'     => new \stdClass,
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(401)->setJSON($response);
         }
 
-        $model = new MediaModel();
+        $model = new GuideModel();
 
         if (!$this->validate($model->validationRules, $model->validationMessages)) {
 
@@ -216,11 +205,11 @@ class Media extends BaseController
                 'message' => $this->validator->getErrors(),
                 'data'    => [],
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(500)->setJSON($response);
         }
 
         if (!$model->findById($id)) {
-            return $this->respondCreated([
+            return $this->response->setStatusCode(404)->setJSON([
                 'status'  => 404,
                 'error'   => true,
                 'message' => 'Designated data to update not found',
@@ -228,73 +217,41 @@ class Media extends BaseController
             ]);
         }
 
-        $media_type = $this->request->getVar('media_type');
-        if ($media_type != 'youtube' && $media_type != 'video' && $media_type != 'image') {
-            $response = [
-                'status'  => 500,
-                'error'   => true,
-                'message' => 'Not Supported Media Type',
-                'data'    => [],
-            ];
-            return $this->respondCreated($response);
-        }
+        $image = '';
+        if ($this->request->getFile('image')) {
+            $config = ConfigModel::findById('image', 'guide');
+            $path   = ConfigModel::findById('path', 'general');
 
-        // Renaming file before upload
-        if ($media_type != 'youtube') {
-            if (!$this->request->getFile('media')) {
-                return $this->respondCreated([
-                    'status'  => 500,
-                    'error'   => true,
-                    'message' => 'Media field is required',
-                    'data'    => [],
-                ]);
-            }
-            $config        = ConfigModel::findById($media_type, 'destination');
-            $path          = ConfigModel::findById('path', 'general');
-            $file          = $this->request->getFile('media');
-            $profile_image = $file->getName();
-            $temp          = explode('.', $profile_image);
-            $newfilename   = round(microtime(true)) . '.' . end($temp);
+            $file        = $this->request->getFile('image');
+            $tmp_name    = $file->getName();
+            $temp        = explode('.', $tmp_name);
+            $newfilename = md5(round(microtime(true))) . '.' . strtolower(end($temp));
 
             if ($file->move($config['path'], $newfilename)) {
-                $file_name = $newfilename;
-                $file_path = $path['path'] . $config['path'] . $file_name;
+                $image = $path['path'] . $config['path'] . $newfilename;
             } else {
-                return $this->respondCreated([
+                return $this->response->setStatusCode(500)->setJSON([
                     'status'  => 500,
                     'error'   => true,
                     'message' => 'Failed to upload image',
                     'data'    => [],
                 ]);
             }
-        } else {
-            if (!$this->request->getVar('link')) {
-                return $this->respondCreated([
-                    'status'  => 500,
-                    'error'   => true,
-                    'message' => 'Youtube Link field is required',
-                    'data'    => [],
-                ]);
-            }
-            $file_name = $this->request->getVar('link');
-            $file_path = '';
         }
 
-        if ($model->updateData($id, $model, $this->request, $file_name, $file_path, $this->user) === false) {
-            $response = [
+        if ($model->updateData($id, $model, $this->request, $image, $this->user) === false) {
+            return $this->response->setStatusCode(500)->setJSON([
                 'status'   => 500,
                 'error'    => true,
                 'messages' => $this->modulName . ' Gagal Tersimpan',
                 'params'   => $model->errors(),
-            ];
+            ]);
         } else {
-            $response = [
+            return $this->response->setStatusCode(200)->setJSON([
                 'status'   => 200,
                 'error'    => null,
-                'messages' => $this->modulName . ' Berhasil Tersimpan '];
+                'messages' => $this->modulName . ' Berhasil Tersimpan ']);
         }
-
-        return $this->respondCreated($response);
     }
 
     /**
@@ -304,7 +261,7 @@ class Media extends BaseController
      */
     public function delete($id = null)
     {
-        $model = new MediaModel();
+        $model = new GuideModel();
         if (empty($this->user)) {
             $response = [
                 'status'   => 401,
@@ -312,12 +269,12 @@ class Media extends BaseController
                 'messages' => 'Access denied',
                 'data'     => new \stdClass,
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(401)->setJSON($response);
         }
 
         // check availability
         if (!$model->findById($id)) {
-            return $this->respondCreated([
+            return $this->response->setStatusCode(404)->setJSON([
                 'status'  => 404,
                 'error'   => true,
                 'message' => 'Designated data to delete not found',
@@ -328,18 +285,17 @@ class Media extends BaseController
         $result = $model->softDelete($id, $model, $this->user);
 
         if ($result === false) {
-            $response = [
+            return $this->response->setStatusCode(500)->setJSON([
                 'status'   => 500,
                 'error'    => true,
                 'messages' => 'Data Failed to Deleted',
-            ];
+            ]);
         } else {
-            $response = [
+            return $this->response->setStatusCode(200)->setJSON([
                 'status'   => 200,
                 'error'    => null,
                 'messages' => 'Data Deleted',
-            ];
+            ]);
         }
-        return $this->respond($response);
     }
 }

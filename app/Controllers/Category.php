@@ -16,15 +16,15 @@ class Category extends BaseController
      */
     public function index()
     {
-        if (empty($this->user)) {
-            $response = [
-                'status'   => 401,
-                'error'    => true,
-                'messages' => 'Access denied',
-                'data'     => [],
-            ];
-            return $this->respondCreated($response);
-        }
+        // if (empty($this->user)) {
+        //     $response = [
+        //         'status'   => 401,
+        //         'error'    => true,
+        //         'messages' => 'Access denied',
+        //         'data'     => new \stdClass,
+        //     ];
+        //     return $this->respondCreated($response);
+        // }
 
         $limit = 0;
         $page  = 0;
@@ -72,7 +72,7 @@ class Category extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => [],
+                'data'     => new \stdClass,
             ];
             return $this->response->setStatusCode(401)->setJSON($response);
         }
@@ -113,7 +113,7 @@ class Category extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => [],
+                'data'     => new \stdClass,
             ];
             return $this->response->setStatusCode(401)->setJSON($response);
         }
@@ -125,7 +125,7 @@ class Category extends BaseController
                 'status'  => 500,
                 'error'   => true,
                 'message' => $this->validator->getErrors(),
-                'data'    => [],
+                'data'    => new \stdClass,
             ];
             return $this->response->setStatusCode(500)->setJSON($response);
         }
@@ -169,7 +169,7 @@ class Category extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => [],
+                'data'     => new \stdClass,
             ];
             return $this->response->setStatusCode(401)->setJSON($response);
         }
@@ -182,7 +182,7 @@ class Category extends BaseController
                 'status'  => 500,
                 'error'   => true,
                 'message' => $this->validator->getErrors(),
-                'data'    => [],
+                'data'    => new \stdClass,
             ];
             return $this->response->setStatusCode(500)->setJSON($response);
         }
@@ -192,7 +192,7 @@ class Category extends BaseController
                 'status'  => 404,
                 'error'   => true,
                 'message' => 'Designated data to update not found',
-                'data'    => [],
+                'data'    => new \stdClass,
             ]);
         }
 
@@ -224,7 +224,7 @@ class Category extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => [],
+                'data'     => new \stdClass,
             ];
             return $this->response->setStatusCode(401)->setJSON($response);
         }
@@ -235,7 +235,7 @@ class Category extends BaseController
                 'status'  => 404,
                 'error'   => true,
                 'message' => 'Designated data to delete not found',
-                'data'    => [],
+                'data'    => new \stdClass,
             ]);
         }
 

@@ -21,7 +21,7 @@ class Favorite extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => [],
+                'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
         }
@@ -49,7 +49,7 @@ class Favorite extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => [],
+                'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
         }
@@ -90,7 +90,7 @@ class Favorite extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => [],
+                'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
         }
@@ -146,7 +146,7 @@ class Favorite extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => [],
+                'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
         }
@@ -172,7 +172,7 @@ class Favorite extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => [],
+                'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
         }

@@ -14,28 +14,42 @@
     <div class="card">
         <form id="form">
             <div class="card-header">
-                <h3 class="card-title"><i class="fa fa-plus fa-fw"></i>&nbsp;<?php echo 'Edit ' . $menu; ?></h3>
+                <h3 class="card-title"><i class="fa fa-plus fa-fw"></i>&nbsp;<?php echo 'Add ' . $menu; ?></h3>
                 <div class="card-tools">
                 </div>
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    <label class="control-label">Name</label>
-                    <input type="text" class="form-control" name="name"
-                    placeholder="Name"
-                    id="name"
-                    aria-describedby="error-name" required="">
-                    <span class="error" id="error-name" style="color:red;">
+                    <label class="control-label">Title</label>
+                    <input type="text" class="form-control" name="title"
+                    placeholder="Title"
+                    id="title"
+                    aria-describedby="error-title" required="">
+                    <span class="error" id="error-title" style="color:red;">
+                    </span>
+                </div>
+                 <div class="form-group">
+                    <label class="control-label">Description</label>
+                    <div class="summernote"
+                    placeholder="Description"
+                    id="description"
+                    aria-describedby="error-description" required=""></div>
+                    <span class="error" id="error-description" style="color:red;">
                     </span>
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Description</label>
-                    <input type="text" class="form-control" name="description"
-                    placeholder="Description"
-                    id="description"
-                    aria-describedby="error-description">
-                    <span class="error" id="error-description" style="color:red;">
+                    <label class="control-label">Image</label>
+                    <input type="file" class="form-control" name="image"
+                    accept="image/*"
+                    id="image"
+                    aria-describedby="error-image" required="">
+                    <span class="error" id="error-image" style="color:red;">
                     </span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Category</label>
+                    <select class="form-control" name="category_id" id="category_id" required="">
+                    </select>
                 </div>
             </div>
             <!-- /.card-body -->

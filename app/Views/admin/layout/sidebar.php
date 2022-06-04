@@ -1,6 +1,6 @@
 <!-- sidebar: style can be found in sidebar.less -->
 <a href="<?php echo base_url(); ?>" class="brand-link navbar-info">
-    <img src="<?php echo base_url(); ?>/assets/admin/dist/img/AdminLTELogo.png"
+    <img src="<?php echo base_url(); ?>/assets/web/images/elements/favicon.png"
         alt="MW Panel"
         class="brand-image img-circle elevation-3"
         style="background-color:white">

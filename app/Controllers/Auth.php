@@ -158,7 +158,7 @@ class Auth extends AdminBaseController
         $this->ionAuth->logout();
 
         // redirect them to the login page
-        $this->session->setFlashdata('message', $this->ionAuth->messages());
+        // $this->session->setFlashdata('message', $this->ionAuth->messages());
         return redirect()->to('/admin/auth/login')->withCookies();
     }
 

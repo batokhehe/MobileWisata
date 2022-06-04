@@ -145,11 +145,9 @@ class DestinationModel extends Model
 
     public static function updateData($id, $model, $image_portrait, $image_landscape, $request, $user)
     {
-        return $model->update($id, [
+        $data = [
             'name'            => $request->getVar('name'),
             'description'     => $request->getVar('description'),
-            'image_portrait'  => $image_portrait,
-            'image_landscape' => $image_landscape,
             'url'             => $request->getVar('url'),
             'lat'             => $request->getVar('lat'),
             'long'            => $request->getVar('long'),
@@ -157,7 +155,15 @@ class DestinationModel extends Model
             'category_id'     => $request->getVar('category_id'),
 
             'updated_at'      => date('Y-m-d H:i:s'),
-        ]);
+        ];
+        
+        if($image_portrait != ''){
+            $data['image_portrait']  = $image_portrait;
+        }
+        if($image_landscape != ''){
+            $data['image_landscape']  = $image_landscape;
+        }
+        return $model->update($id, $data);
     }
 
     public static function softDelete($id, $model, $user)

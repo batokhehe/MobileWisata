@@ -48,6 +48,12 @@ class AccessMenu
                 'action' => ['index', 'detail', 'create', 'update', 'delete'],
                 'access' => 'index, detail, create, update, delete',
             ],
+            'guide' => [
+                'slug'   => 'guide',
+                'index'  => 'index',
+                'action' => ['index', 'detail', 'create', 'update', 'delete'],
+                'access' => 'index, detail, create, update, delete',
+            ],
         ];
     }
 }

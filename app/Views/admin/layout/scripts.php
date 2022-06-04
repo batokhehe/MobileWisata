@@ -17,3 +17,5 @@
 <script src="<?php echo base_url(); ?>/assets/admin/plugins/daterangepicker/daterangepicker.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>

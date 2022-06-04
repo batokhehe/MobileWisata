@@ -20,21 +20,37 @@
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    <label class="control-label">Name</label>
-                    <input type="text" class="form-control" name="name"
-                    placeholder="Name"
-                    id="name"
-                    aria-describedby="error-name" required="">
-                    <span class="error" id="error-name" style="color:red;">
+                    <label class="control-label">Title</label>
+                    <input type="text" class="form-control" name="title"
+                    placeholder="Title"
+                    id="title"
+                    aria-describedby="error-title" required="">
+                    <span class="error" id="error-title" style="color:red;">
                     </span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Icon</label>
+                    <input type="text" class="form-control" name="icon"
+                    placeholder="Icon"
+                    id="icon"
+                    aria-describedby="error-icon" required="">
                 </div>
                 <div class="form-group">
                     <label class="control-label">Description</label>
                     <input type="text" class="form-control" name="description"
                     placeholder="Description"
                     id="description"
-                    aria-describedby="error-description">
+                    aria-describedby="error-description" required="">
                     <span class="error" id="error-description" style="color:red;">
+                    </span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Image</label>
+                    <input type="file" class="form-control" name="image"
+                    accept="image/*"
+                    id="image"
+                    aria-describedby="error-image" required="">
+                    <span class="error" id="error-image" style="color:red;">
                     </span>
                 </div>
             </div>

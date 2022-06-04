@@ -34,17 +34,25 @@ $routes->setAutoRoute(true);
 $routes->get('/', 'Home::index');
 $routes->get('/location_post/(:num)', 'Home::location_post/$1');
 $routes->get('/blog_post/(:num)', 'Home::blog_post/$1');
+$routes->get('/reset_password/(:any)', 'Home::reset_password/$1');
 $routes->get('/location', 'Home::location');
 $routes->get('/blog_list', 'Home::blog_list');
 
 $routes->group('api', function ($routes) {
     $routes->post('register', 'User::register');
     $routes->post('login', 'User::login');
+    $routes->post('login/google', 'User::login_google');
     $routes->get('profile', 'User::details');
     $routes->post('change-profile', 'User::change_profile');
     $routes->post('change-password', 'User::change_password');
     $routes->post('forgot-password', 'User::forgot_password');
-    $routes->resource('user');
+    $routes->post('reset_password', 'User::reset_password');
+    $routes->get('user', 'User::index');
+    $routes->post('user', 'User::create');
+    $routes->post('user/(:num)', 'User::update/$1');
+    $routes->get('user/(:num)', 'User::show/$1');
+    $routes->delete('user/(:num)', 'User::delete/$1');
+
     $routes->resource('category');
     $routes->resource('favorite');
     $routes->resource('rateReview');
@@ -58,6 +66,18 @@ $routes->group('api', function ($routes) {
     $routes->post('destination/(:num)', 'Destination::update/$1');
     $routes->get('destination/(:num)', 'Destination::show/$1');
     $routes->delete('destination/(:num)', 'Destination::delete/$1');
+
+    $routes->get('blog', 'Blog::index');
+    $routes->post('blog', 'Blog::create');
+    $routes->post('blog/(:num)', 'Blog::update/$1');
+    $routes->get('blog/(:num)', 'Blog::show/$1');
+    $routes->delete('blog/(:num)', 'Blog::delete/$1');
+
+    $routes->get('guide', 'Guide::index');
+    $routes->post('guide', 'Guide::create');
+    $routes->post('guide/(:num)', 'Guide::update/$1');
+    $routes->get('guide/(:num)', 'Guide::show/$1');
+    $routes->delete('guide/(:num)', 'Guide::delete/$1');
 
     $routes->get('headline/(:num)', 'Headline::show/$1');
     $routes->post('headline/(:num)', 'Headline::update/$1');
@@ -82,6 +102,18 @@ $routes->group('admin', function ($routes) {
     $routes->get('category', 'CategoryAdmin::index');
     $routes->get('category/create', 'CategoryAdmin::create');
     $routes->get('category/edit/(:num)', 'CategoryAdmin::edit/$1');
+
+    $routes->get('user', 'UserAdmin::index');
+    $routes->get('user/create', 'UserAdmin::create');
+    $routes->get('user/edit/(:num)', 'UserAdmin::edit/$1');
+
+    $routes->get('blog', 'BlogAdmin::index');
+    $routes->get('blog/create', 'BlogAdmin::create');
+    $routes->get('blog/edit/(:num)', 'BlogAdmin::edit/$1');
+
+    $routes->get('guide', 'GuideAdmin::index');
+    $routes->get('guide/create', 'GuideAdmin::create');
+    $routes->get('guide/edit/(:num)', 'GuideAdmin::edit/$1');
 });
 
 /*

@@ -26,7 +26,7 @@ class Destination extends BaseController
         //         'status'   => 401,
         //         'error'    => true,
         //         'messages' => 'Access denied',
-        //         'data'     => [],
+        //          'data'    => new \stdClass,
         //     ];
         //     return $this->respondCreated($response);
         // }
@@ -77,7 +77,7 @@ class Destination extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => [],
+                'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
         }
@@ -141,7 +141,7 @@ class Destination extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => [],
+                'data'     => new \stdClass,
             ];
             return $this->response->setStatusCode(401)->setJSON($response);
         }
@@ -241,7 +241,7 @@ class Destination extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => [],
+                'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
         }
@@ -268,7 +268,34 @@ class Destination extends BaseController
             ]);
         }
 
-        if ($model->updateData($id, $model, $this->request, $this->user) === false) {
+        $image_portrait  = "";
+        $image_landscape = "";
+
+        $config = ConfigModel::findById('image', 'destination');
+        $path   = ConfigModel::findById('path', 'general');
+
+        if ($this->request->getFile('image_portrait') !== null && $this->request->getFile('image_portrait')->isValid()) {
+            $file_1        = $this->request->getFile('image_portrait');
+            $tmp_name_1    = $file_1->getName();
+            $temp_1        = explode('.', $tmp_name_1);
+            $newfilename_1 = md5(round(microtime(true))) . '.' . strtolower(end($temp_1));
+
+            $file_1->move($config['path'], $newfilename_1);
+            $image_portrait = $path['path'] . $config['path'] . $newfilename_1;
+        }
+
+        if ($this->request->getFile('image_landscape') !== null && $this->request->getFile('image_landscape')->isValid()) {
+            $file_2        = $this->request->getFile('image_landscape');
+            $tmp_name_2    = $file_2->getName();
+            $temp_2        = explode('.', $tmp_name_2);
+            $newfilename_2 = md5(round(microtime(true))) . '_21.' . strtolower(end($temp_2));
+
+            $file_2->move($config['path'], $newfilename_2);
+
+            $image_landscape = $path['path'] . $config['path'] . $newfilename_2;
+        }
+
+        if ($model->updateData($id, $model, $image_portrait, $image_landscape, $this->request, $this->user) === false) {
             $response = [
                 'status'   => 500,
                 'error'    => true,
@@ -298,7 +325,7 @@ class Destination extends BaseController
                 'status'   => 401,
                 'error'    => true,
                 'messages' => 'Access denied',
-                'data'     => [],
+                'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
         }
