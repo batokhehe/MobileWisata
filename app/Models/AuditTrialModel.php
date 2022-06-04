@@ -46,16 +46,16 @@ class AuditTrialModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public static function getAll($request, $limit, $page, $query)
+    public static function getAll($request, $limit, $page, $query, $user)
     {
         $model = new AuditTrialModel();
-        return $model->where()->like('name', $query)->orderBy('id', 'DESC')->get($limit, $page)->getResult();
+        return $model->where('user_id', $user->data->id)->orderBy('id', 'DESC')->get($limit, $page)->getResult();
     }
 
-    public static function getAllCounter()
+    public static function getAllCounter($user)
     {
         $model = new AuditTrialModel();
-        return count($model->select('id')->where('deleted_at', null)->findAll());
+        return count($model->select('id')->where('user_id', $user->data->id)->findAll());
     }
 
     public static function findById($id)
@@ -64,12 +64,13 @@ class AuditTrialModel extends Model
         return $model->where([$model->primaryKey => $id])->where()->first();
     }
 
-    public static function createNew($model, $event, $module, $user)
+    public static function createNew($event, $module, $user_id)
     {
+        $model = new AuditTrialModel();
         return $model->insert([
             'event'      => $event,
             'module'     => $module,
-            'user_id'    => $user->data->id,
+            'user_id'    => $user_id,
 
             'created_at' => date('Y-m-d H:i:s'),
         ]);

@@ -30,7 +30,7 @@ class Headline extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
@@ -42,7 +42,7 @@ class Headline extends BaseController
             $response = [
                 'status'   => 200,
                 'error'    => null,
-                'messages' => $this->modulName . ' Found',
+                'message' => $this->modulName . ' Found',
                 'data'     => $result,
             ];
             return $this->respond($response);
@@ -93,7 +93,7 @@ class Headline extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
@@ -103,13 +103,14 @@ class Headline extends BaseController
 
         if (!$this->validate($model->validationRules, $model->validationMessages)) {
 
+            $tmp      = $this->validator->getErrors();
             $response = [
                 'status'  => 500,
                 'error'   => true,
-                'message' => $this->validator->getErrors(),
-                'data'    => [],
+                'message' => reset($tmp),
+                'data'    => new \stdClass,
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(500)->setJSON($response);
         }
 
         if (!$model->findById($id)) {
@@ -125,14 +126,14 @@ class Headline extends BaseController
             $response = [
                 'status'   => 500,
                 'error'    => true,
-                'messages' => $this->modulName . ' Gagal Tersimpan',
+                'message' => $this->modulName . ' Gagal Tersimpan',
                 'params'   => $model->errors(),
             ];
         } else {
             $response = [
                 'status'   => 200,
                 'error'    => null,
-                'messages' => $this->modulName . ' Berhasil Tersimpan '];
+                'message' => $this->modulName . ' Berhasil Tersimpan '];
         }
 
         return $this->respondCreated($response);

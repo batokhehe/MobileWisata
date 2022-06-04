@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Models\FavoriteModel;
+use App\Models\DestinationModel;
+use App\Models\AuditTrialModel;
 
 class Favorite extends BaseController
 {
@@ -20,7 +22,7 @@ class Favorite extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
@@ -31,7 +33,7 @@ class Favorite extends BaseController
         $response = [
             'status'   => 200,
             'error'    => null,
-            'messages' => $this->modulName . ' Data ' . count($data) . ' Found',
+            'message' => $this->modulName . ' Data ' . count($data) . ' Found',
             'data'     => $data,
         ];
         return $this->respond($response);
@@ -48,7 +50,7 @@ class Favorite extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
@@ -60,7 +62,7 @@ class Favorite extends BaseController
             $response = [
                 'status'   => 200,
                 'error'    => null,
-                'messages' => $this->modulName . ' Found',
+                'message' => $this->modulName . ' Found',
                 'data'     => $result,
             ];
             return $this->respond($response);
@@ -89,7 +91,7 @@ class Favorite extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
@@ -98,27 +100,31 @@ class Favorite extends BaseController
         $model = new FavoriteModel();
 
         if (!$this->validate($model->validationRules, $model->validationMessages)) {
+            $tmp      = $this->validator->getErrors();
             $response = [
                 'status'  => 500,
                 'error'   => true,
-                'message' => $this->validator->getErrors(),
-                'data'    => [],
+                'message' => reset($tmp),
+                'data'    => new \stdClass,
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(500)->setJSON($response);
         }
 
         if ($model->createNew($model, $this->request, $this->user) === false) {
             $response = [
                 'status'   => 500,
                 'error'    => true,
-                'messages' => $this->modulName . ' Gagal Tersimpan',
+                'message' => $this->modulName . ' Gagal Tersimpan',
                 'params'   => $model->errors(),
             ];
         } else {
+            $destination = DestinationModel::findById($this->request->getVar('destination_id'));
+            AuditTrialModel::createNew('Menambahkan destinasi ' . $destination['name'] . ' sebagai favorit.', 'User', $this->user->data->id);
+
             $response = [
                 'status'   => 200,
                 'error'    => null,
-                'messages' => $this->modulName . ' Berhasil Tersimpan '];
+                'message' => $this->modulName . ' Berhasil Tersimpan '];
         }
 
         return $this->respondCreated($response);
@@ -145,7 +151,7 @@ class Favorite extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
@@ -171,7 +177,7 @@ class Favorite extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
@@ -193,13 +199,16 @@ class Favorite extends BaseController
             $response = [
                 'status'   => 500,
                 'error'    => true,
-                'messages' => 'Data Failed to Deleted',
+                'message' => 'Data Failed to Deleted',
             ];
         } else {
+            $destination = DestinationModel::findById($id);
+            AuditTrialModel::createNew('Menghapus destinasi ' . $destination['name'] . ' dari favorit.', 'User', $this->user->data->id);
+
             $response = [
                 'status'   => 200,
                 'error'    => null,
-                'messages' => 'Data Deleted',
+                'message' => 'Data Deleted',
             ];
         }
         return $this->respond($response);

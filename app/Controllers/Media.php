@@ -21,7 +21,7 @@ class Media extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
@@ -32,7 +32,7 @@ class Media extends BaseController
         $response = [
             'status'          => 200,
             'error'           => null,
-            'messages'        => $this->modulName . ' Data ' . count($data) . ' Found',
+            'message'        => $this->modulName . ' Data ' . count($data) . ' Found',
             'data'            => $data,
             'recordsTotal'    => count($data),
             'recordsFiltered' => count($data),
@@ -51,7 +51,7 @@ class Media extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
@@ -63,7 +63,7 @@ class Media extends BaseController
             $response = [
                 'status'   => 200,
                 'error'    => null,
-                'messages' => $this->modulName . ' Found',
+                'message' => $this->modulName . ' Found',
                 'data'     => $result,
             ];
             return $this->respond($response);
@@ -92,7 +92,7 @@ class Media extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
@@ -101,13 +101,14 @@ class Media extends BaseController
         $model = new MediaModel();
 
         if (!$this->validate($model->validationRules, $model->validationMessages)) {
+            $tmp      = $this->validator->getErrors();
             $response = [
                 'status'  => 500,
                 'error'   => true,
-                'message' => $this->validator->getErrors(),
-                'data'    => [],
+                'message' => reset($tmp),
+                'data'    => new \stdClass,
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(500)->setJSON($response);
         }
 
         $media_type = $this->request->getVar('media_type');
@@ -166,14 +167,14 @@ class Media extends BaseController
             $response = [
                 'status'   => 500,
                 'error'    => true,
-                'messages' => $this->modulName . ' Gagal Tersimpan',
+                'message' => $this->modulName . ' Gagal Tersimpan',
                 'params'   => $model->errors(),
             ];
         } else {
             $response = [
                 'status'   => 200,
                 'error'    => null,
-                'messages' => $this->modulName . ' Berhasil Tersimpan '];
+                'message' => $this->modulName . ' Berhasil Tersimpan '];
         }
 
         return $this->respondCreated($response);
@@ -200,7 +201,7 @@ class Media extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
@@ -210,13 +211,14 @@ class Media extends BaseController
 
         if (!$this->validate($model->validationRules, $model->validationMessages)) {
 
+            $tmp      = $this->validator->getErrors();
             $response = [
                 'status'  => 500,
                 'error'   => true,
-                'message' => $this->validator->getErrors(),
-                'data'    => [],
+                'message' => reset($tmp),
+                'data'    => new \stdClass,
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(500)->setJSON($response);
         }
 
         if (!$model->findById($id)) {
@@ -284,14 +286,14 @@ class Media extends BaseController
             $response = [
                 'status'   => 500,
                 'error'    => true,
-                'messages' => $this->modulName . ' Gagal Tersimpan',
+                'message' => $this->modulName . ' Gagal Tersimpan',
                 'params'   => $model->errors(),
             ];
         } else {
             $response = [
                 'status'   => 200,
                 'error'    => null,
-                'messages' => $this->modulName . ' Berhasil Tersimpan '];
+                'message' => $this->modulName . ' Berhasil Tersimpan '];
         }
 
         return $this->respondCreated($response);
@@ -309,7 +311,7 @@ class Media extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
@@ -331,13 +333,13 @@ class Media extends BaseController
             $response = [
                 'status'   => 500,
                 'error'    => true,
-                'messages' => 'Data Failed to Deleted',
+                'message' => 'Data Failed to Deleted',
             ];
         } else {
             $response = [
                 'status'   => 200,
                 'error'    => null,
-                'messages' => 'Data Deleted',
+                'message' => 'Data Deleted',
             ];
         }
         return $this->respond($response);

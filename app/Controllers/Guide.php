@@ -21,7 +21,7 @@ class Guide extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->respondCreated($response);
@@ -53,7 +53,7 @@ class Guide extends BaseController
         $response = [
             'status'          => 200,
             'error'           => null,
-            'messages'        => $this->modulName . ' Data ' . count($data) . ' Found',
+            'message'        => $this->modulName . ' Data ' . count($data) . ' Found',
             'data'            => $data,
             'recordsTotal'    => $counter,
             'recordsFiltered' => $counter,
@@ -72,7 +72,7 @@ class Guide extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->response->setStatusCode(401)->setJSON($response);
@@ -84,7 +84,7 @@ class Guide extends BaseController
             $response = [
                 'status'   => 200,
                 'error'    => null,
-                'messages' => $this->modulName . ' Found',
+                'message' => $this->modulName . ' Found',
                 'data'     => $result,
             ];
             return $this->response->setStatusCode(200)->setJSON($response);
@@ -113,7 +113,7 @@ class Guide extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->response->setStatusCode(401)->setJSON($response);
@@ -122,11 +122,12 @@ class Guide extends BaseController
         $model = new GuideModel();
 
         if (!$this->validate($model->validationRules, $model->validationMessages)) {
+            $tmp      = $this->validator->getErrors();
             $response = [
                 'status'  => 500,
                 'error'   => true,
-                'message' => $this->validator->getErrors(),
-                'data'    => [],
+                'message' => reset($tmp),
+                'data'    => new \stdClass,
             ];
             return $this->response->setStatusCode(500)->setJSON($response);
         }
@@ -155,14 +156,14 @@ class Guide extends BaseController
             $response = [
                 'status'   => 500,
                 'error'    => true,
-                'messages' => $this->modulName . ' Gagal Tersimpan',
+                'message' => $this->modulName . ' Gagal Tersimpan',
                 'params'   => $model->errors(),
             ];
         } else {
             $response = [
                 'status'   => 200,
                 'error'    => null,
-                'messages' => $this->modulName . ' Berhasil Tersimpan '];
+                'message' => $this->modulName . ' Berhasil Tersimpan '];
         }
 
         return $this->response->setStatusCode($response['status'])->setJSON($response);
@@ -189,7 +190,7 @@ class Guide extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->response->setStatusCode(401)->setJSON($response);
@@ -199,11 +200,12 @@ class Guide extends BaseController
 
         if (!$this->validate($model->validationRules, $model->validationMessages)) {
 
+            $tmp      = $this->validator->getErrors();
             $response = [
                 'status'  => 500,
                 'error'   => true,
-                'message' => $this->validator->getErrors(),
-                'data'    => [],
+                'message' => reset($tmp),
+                'data'    => new \stdClass,
             ];
             return $this->response->setStatusCode(500)->setJSON($response);
         }
@@ -243,14 +245,14 @@ class Guide extends BaseController
             return $this->response->setStatusCode(500)->setJSON([
                 'status'   => 500,
                 'error'    => true,
-                'messages' => $this->modulName . ' Gagal Tersimpan',
+                'message' => $this->modulName . ' Gagal Tersimpan',
                 'params'   => $model->errors(),
             ]);
         } else {
             return $this->response->setStatusCode(200)->setJSON([
                 'status'   => 200,
                 'error'    => null,
-                'messages' => $this->modulName . ' Berhasil Tersimpan ']);
+                'message' => $this->modulName . ' Berhasil Tersimpan ']);
         }
     }
 
@@ -266,7 +268,7 @@ class Guide extends BaseController
             $response = [
                 'status'   => 401,
                 'error'    => true,
-                'messages' => 'Access denied',
+                'message' => 'Access denied',
                 'data'     => new \stdClass,
             ];
             return $this->response->setStatusCode(401)->setJSON($response);
@@ -288,13 +290,13 @@ class Guide extends BaseController
             return $this->response->setStatusCode(500)->setJSON([
                 'status'   => 500,
                 'error'    => true,
-                'messages' => 'Data Failed to Deleted',
+                'message' => 'Data Failed to Deleted',
             ]);
         } else {
             return $this->response->setStatusCode(200)->setJSON([
                 'status'   => 200,
                 'error'    => null,
-                'messages' => 'Data Deleted',
+                'message' => 'Data Deleted',
             ]);
         }
     }

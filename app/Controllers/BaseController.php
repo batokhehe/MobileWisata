@@ -52,15 +52,15 @@ class BaseController extends ResourceController
         // Preload any models, libraries, etc, here.
         // Auth
         $this->key = $this->getKey();
-        // if (empty($request->getHeader('Authorization'))) {
-        //     $response = [
-        //         'status' => 401,
-        //         'error' => true,
-        //         'messages' => 'Access denied',
-        //         'data' => []
-        //     ];
-        //     return $this->respondCreated($response);
-        // }
+        if (empty($request->getHeader('Authorization'))) {
+            $response = [
+                'status' => 401,
+                'error' => true,
+                'messages' => 'Access denied',
+                'data' => []
+            ];
+            return $this->respondCreated($response);
+        }
         $token = $request->getHeader('Authorization')->getValue();
         try {
             $decoded = JWT::decode($token, $this->key, array('HS256'));

@@ -25,7 +25,7 @@ class Destination extends BaseController
         //     $response = [
         //         'status'   => 401,
         //         'error'    => true,
-        //         'messages' => 'Access denied',
+        //         'message' => 'Access denied',
         //          'data'    => new \stdClass,
         //     ];
         //     return $this->respondCreated($response);
@@ -53,11 +53,29 @@ class Destination extends BaseController
 
         $data    = DestinationModel::getAll($this->request, $limit, $page, $query);
         $counter = DestinationModel::getAllCounter();
+        $client  = \Config\Services::curlrequest();
+
+        foreach ($data as $d) {
+            $d->rate = RateReviewModel::findAverageByDestinationId($d->id);
+
+            if ($this->request->getGet('lat') & $this->request->getGet('long')) {
+                $origin      = [$this->request->getGet('lat'), $this->request->getGet('long')];
+                $destination = [$d->lat, $d->long];
+                $url         = 'https://maps.googleapis.com/maps/api/directions/json?language=id&mode=driving&sensor=false&destination='
+                    . $destination[0] . ',' . $destination[1] .
+                    '&origin='
+                    . $origin[0] . ',' . $origin[1] .
+                    '&key=AIzaSyBbzLLqcMjbMIiBdB3I0b_khv79IfZG5Ls';
+                $response = json_decode($client->request('GET', $url, [])->getBody());
+                // return $this->response->setStatusCode(200)->setJSON($response);
+                $d->distance = $response->routes[0]->legs[0]->distance->text;
+            }
+        }
 
         $response = [
             'status'          => 200,
             'error'           => null,
-            'messages'        => $this->modulName . ' Data ' . count($data) . ' Found',
+            'message'         => $this->modulName . ' Data ' . count($data) . ' Found',
             'data'            => $data,
             'recordsTotal'    => $counter,
             'recordsFiltered' => $counter,
@@ -74,10 +92,10 @@ class Destination extends BaseController
     {
         if (empty($this->user)) {
             $response = [
-                'status'   => 401,
-                'error'    => true,
-                'messages' => 'Access denied',
-                'data'     => new \stdClass,
+                'status'  => 401,
+                'error'   => true,
+                'message' => 'Access denied',
+                'data'    => new \stdClass,
             ];
             return $this->respondCreated($response);
         }
@@ -109,10 +127,10 @@ class Destination extends BaseController
         }
         if ($result) {
             $response = [
-                'status'   => 200,
-                'error'    => null,
-                'messages' => $this->modulName . ' Found',
-                'data'     => $result,
+                'status'  => 200,
+                'error'   => null,
+                'message' => $this->modulName . ' Found',
+                'data'    => $result,
             ];
             return $this->respond($response);
         } else {
@@ -138,10 +156,10 @@ class Destination extends BaseController
     {
         if (empty($this->user)) {
             $response = [
-                'status'   => 401,
-                'error'    => true,
-                'messages' => 'Access denied',
-                'data'     => new \stdClass,
+                'status'  => 401,
+                'error'   => true,
+                'message' => 'Access denied',
+                'data'    => new \stdClass,
             ];
             return $this->response->setStatusCode(401)->setJSON($response);
         }
@@ -149,11 +167,12 @@ class Destination extends BaseController
         $model = new DestinationModel();
 
         if (!$this->validate($model->validationRules, $model->validationMessages)) {
+            $tmp      = $this->validator->getErrors();
             $response = [
                 'status'  => 500,
                 'error'   => true,
-                'message' => $this->validator->getErrors(),
-                'data'    => [],
+                'message' => reset($tmp),
+                'data'    => new \stdClass,
             ];
             return $this->response->setStatusCode(500)->setJSON($response);
         }
@@ -204,16 +223,16 @@ class Destination extends BaseController
         }
         if ($model->createNew($model, $this->request, $image_portrait, $image_landscape, $this->user) === false) {
             return $this->response->setStatusCode(500)->setJSON([
-                'status'   => 500,
-                'error'    => true,
-                'messages' => $this->modulName . ' Gagal Tersimpan',
-                'params'   => $model->errors(),
+                'status'  => 500,
+                'error'   => true,
+                'message' => $this->modulName . ' Gagal Tersimpan',
+                'params'  => $model->errors(),
             ]);
         } else {
             return $this->response->setStatusCode(200)->setJSON([
-                'status'   => 200,
-                'error'    => null,
-                'messages' => $this->modulName . ' Berhasil Tersimpan ',
+                'status'  => 200,
+                'error'   => null,
+                'message' => $this->modulName . ' Berhasil Tersimpan ',
             ]);
         }
 
@@ -238,10 +257,10 @@ class Destination extends BaseController
     {
         if (empty($this->user)) {
             $response = [
-                'status'   => 401,
-                'error'    => true,
-                'messages' => 'Access denied',
-                'data'     => new \stdClass,
+                'status'  => 401,
+                'error'   => true,
+                'message' => 'Access denied',
+                'data'    => new \stdClass,
             ];
             return $this->respondCreated($response);
         }
@@ -250,13 +269,14 @@ class Destination extends BaseController
 
         if (!$this->validate($model->validationRules, $model->validationMessages)) {
 
+            $tmp      = $this->validator->getErrors();
             $response = [
                 'status'  => 500,
                 'error'   => true,
-                'message' => $this->validator->getErrors(),
-                'data'    => [],
+                'message' => reset($tmp),
+                'data'    => new \stdClass,
             ];
-            return $this->respondCreated($response);
+            return $this->response->setStatusCode(500)->setJSON($response);
         }
 
         if (!$model->findById($id)) {
@@ -297,16 +317,16 @@ class Destination extends BaseController
 
         if ($model->updateData($id, $model, $image_portrait, $image_landscape, $this->request, $this->user) === false) {
             $response = [
-                'status'   => 500,
-                'error'    => true,
-                'messages' => $this->modulName . ' Gagal Tersimpan',
-                'params'   => $model->errors(),
+                'status'  => 500,
+                'error'   => true,
+                'message' => $this->modulName . ' Gagal Tersimpan',
+                'params'  => $model->errors(),
             ];
         } else {
             $response = [
-                'status'   => 200,
-                'error'    => null,
-                'messages' => $this->modulName . ' Berhasil Tersimpan '];
+                'status'  => 200,
+                'error'   => null,
+                'message' => $this->modulName . ' Berhasil Tersimpan '];
         }
 
         return $this->respondCreated($response);
@@ -322,10 +342,10 @@ class Destination extends BaseController
         $model = new DestinationModel();
         if (empty($this->user)) {
             $response = [
-                'status'   => 401,
-                'error'    => true,
-                'messages' => 'Access denied',
-                'data'     => new \stdClass,
+                'status'  => 401,
+                'error'   => true,
+                'message' => 'Access denied',
+                'data'    => new \stdClass,
             ];
             return $this->respondCreated($response);
         }
@@ -344,15 +364,15 @@ class Destination extends BaseController
 
         if ($result === false) {
             $response = [
-                'status'   => 500,
-                'error'    => true,
-                'messages' => 'Data Failed to Deleted',
+                'status'  => 500,
+                'error'   => true,
+                'message' => 'Data Failed to Deleted',
             ];
         } else {
             $response = [
-                'status'   => 200,
-                'error'    => null,
-                'messages' => 'Data Deleted',
+                'status'  => 200,
+                'error'   => null,
+                'message' => 'Data Deleted',
             ];
         }
         return $this->respond($response);

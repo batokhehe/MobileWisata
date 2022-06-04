@@ -56,6 +56,7 @@ $routes->group('api', function ($routes) {
     $routes->resource('category');
     $routes->resource('favorite');
     $routes->resource('rateReview');
+    $routes->get('notifications', 'AuditTrial::index');
     $routes->get('media', 'Media::index');
     $routes->post('media', 'Media::create');
     $routes->post('media/(:num)', 'Media::update/$1');
