@@ -51,7 +51,7 @@ class Destination extends BaseController
             $query = $this->request->getGet('search')['value'];
         }
 
-        $data    = DestinationModel::getAll($this->request, $limit, $page, $query);
+        $data    = DestinationModel::getAll($this->request, $limit, $page, $query, $this->request->getGet('lat'), $this->request->getGet('long'));
         $counter = DestinationModel::getAllCounter();
         $client  = \Config\Services::curlrequest();
 

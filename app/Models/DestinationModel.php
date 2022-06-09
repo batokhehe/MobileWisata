@@ -87,16 +87,25 @@ class DestinationModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public static function getAll($request, $limit, $page, $query)
+    public static function getAll($request, $limit, $page, $query, $lat, $long)
     {
-        if ($request->getGet('popular')) {
+        $where = ['deleted_at' => null];
+        if ($request->getGet('category')) {
+            $where['category_id'] = $request->getGet('category');
+        }
+        if ($request->getGet('popular') || ($request->getGet('sort_by') && $request->getGet('sort_by') == 'popular')) {
             $db = db_connect();
-            return $db->table('v_popular_destination')->like('name', $query)->orderBy('id', 'ASC')->get($limit, $page)->getResult();
+            return $db->table('v_popular_destination')->where($where)->like('name', $query)->get($limit, $page)->getResult();
+        }
+        if ($request->getGet('sort_by') && $request->getGet('sort_by') == 'distance' && $request->getGet('lat') && $request->getGet('long')) {
+            $db = db_connect();
+            $lat = $request->getGet('lat');
+            $long = $request->getGet('long');
+            return $db->table('destination')->select('*, (6371 * acos(cos(radians(' . $lat . ')) * cos(radians(lat)) * cos( radians(`long`) - radians(' . $long . ')) + sin (radians(' . $lat . ')) * sin(radians(lat)))) AS distance')->where($where)->like('name', $query)->orderBy('distance', 'ASC')->get($limit, $page)->getResult();
         }
 
         $model = new DestinationModel();
 
-        $where   = ['deleted_at' => null];
         $whereIn = ['0', '1', '2', '3'];
 
         if ($request->getGet('intro')) {
@@ -105,10 +114,6 @@ class DestinationModel extends Model
 
         if ($request->getGet('home')) {
             $whereIn = ['2', '3'];
-        }
-
-        if ($request->getGet('category')) {
-            $where['category_id'] = $request->getGet('category');
         }
 
         return $model->whereIn('status_apps', $whereIn)->where($where)->like('name', $query)->orderBy('id', 'ASC')->get($limit, $page)->getResult();
@@ -146,22 +151,22 @@ class DestinationModel extends Model
     public static function updateData($id, $model, $image_portrait, $image_landscape, $request, $user)
     {
         $data = [
-            'name'            => $request->getVar('name'),
-            'description'     => $request->getVar('description'),
-            'url'             => $request->getVar('url'),
-            'lat'             => $request->getVar('lat'),
-            'long'            => $request->getVar('long'),
-            'status'          => $request->getVar('status'),
-            'category_id'     => $request->getVar('category_id'),
+            'name'        => $request->getVar('name'),
+            'description' => $request->getVar('description'),
+            'url'         => $request->getVar('url'),
+            'lat'         => $request->getVar('lat'),
+            'long'        => $request->getVar('long'),
+            'status'      => $request->getVar('status'),
+            'category_id' => $request->getVar('category_id'),
 
-            'updated_at'      => date('Y-m-d H:i:s'),
+            'updated_at'  => date('Y-m-d H:i:s'),
         ];
-        
-        if($image_portrait != ''){
-            $data['image_portrait']  = $image_portrait;
+
+        if ($image_portrait != '') {
+            $data['image_portrait'] = $image_portrait;
         }
-        if($image_landscape != ''){
-            $data['image_landscape']  = $image_landscape;
+        if ($image_landscape != '') {
+            $data['image_landscape'] = $image_landscape;
         }
         return $model->update($id, $data);
     }
