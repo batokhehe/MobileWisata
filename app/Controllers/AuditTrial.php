@@ -49,12 +49,6 @@ class AuditTrial extends BaseController
         $data    = AuditTrialModel::getAll($this->request, $limit, $page, $query, $this->user);
         $counter = AuditTrialModel::getAllCounter($this->user);
 
-        for ($i = 0; $i < count($data); $i++) {
-            if ($this->user->data->id == $data[$i]->user_id) {
-                $data[$i]->editable = true;
-            }
-        }
-
         $response = [
             'status'          => 200,
             'error'           => null,
@@ -63,6 +57,9 @@ class AuditTrial extends BaseController
             'recordsTotal'    => $counter,
             'recordsFiltered' => $counter,
         ];
+
+        AuditTrialModel::updateData($this->user->data->id);
+
         return $this->response->setStatusCode(200)->setJSON($response);
     }
 }

@@ -414,7 +414,16 @@ class User extends BaseController
             return $this->response->setStatusCode(500)->setJSON($response);
         }
 
+
         $userModel = new UserModel();
+        if ($userModel->isUniqueCode($userModel, $this->request->getVar('email'), $this->user->data->id) > 0) {
+            return $this->response->setStatusCode(500)->setJSON([
+                'status'   => 500,
+                'error'    => true,
+                'messages' => 'Email sudah terpakai',
+                'data'    => new \stdClass,
+            ]);
+        }
 
         $data = [
             'name'    => $this->request->getVar('name'),
@@ -462,10 +471,11 @@ class User extends BaseController
 
             return $this->respondCreated($response);
         } else {
+            $tmp      = $userModel->errors();
             return $this->response->setStatusCode(500)->setJSON([
                 'status'  => 500,
                 'error'   => true,
-                'message' => $userModel->errors(),
+                'message' => reset($tmp),
                 'data'    => new \stdClass,
             ]);
         }
@@ -808,6 +818,7 @@ class User extends BaseController
         }
 
         $userModel = new UserModel();
+        $is_register = 0;
 
         if (!$userModel->where('email', $this->request->getVar('email'))->first()) {
             $userModel = new UserModel();
@@ -822,6 +833,7 @@ class User extends BaseController
             ];
 
             $userModel->insert($data);
+            $is_register = 1;
         }
 
         $userdata = $userModel->where('email', $this->request->getVar('email'))->first();
@@ -845,6 +857,7 @@ class User extends BaseController
                 );
 
                 $data  = $userdata;
+                $data['is_register'] = $is_register;
                 $token = JWT::encode($payload, $key);
                 unset($data['password']);
 

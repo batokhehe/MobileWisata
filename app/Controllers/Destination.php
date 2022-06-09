@@ -70,6 +70,7 @@ class Destination extends BaseController
                 // return $this->response->setStatusCode(200)->setJSON($response);
                 $d->distance = $response->routes[0]->legs[0]->distance->text;
             }
+            $d->category = CategoryModel::findById($d->category_id)['name'];
         }
 
         $response = [

@@ -20,6 +20,8 @@ class AuditTrialModel extends Model
         'module',
         'user_id',
         'created_at',
+        'read_at',
+        'is_read',
     ];
 
     // Dates
@@ -71,8 +73,17 @@ class AuditTrialModel extends Model
             'event'      => $event,
             'module'     => $module,
             'user_id'    => $user_id,
+            'is_read'    => '0',
 
             'created_at' => date('Y-m-d H:i:s'),
         ]);
+    }
+
+    public static function updateData($user_id)
+    {
+        $model = new AuditTrialModel();
+        return $model->where(['user_id' => $user_id, 'is_read' => 0])
+            ->set(['is_read' => 1, 'read_at' => date('Y-m-d H:i:s')])
+            ->update();
     }
 }

@@ -39,7 +39,7 @@ class UserModel extends Model
     // Validation
     protected $validationRules = [
         'name'     => 'required',
-        'email'    => 'required|valid_email|is_unique[user.email]|min_length[6]',
+        'email'    => 'required|valid_email|min_length[6]',
         // 'phone'    => 'required',
         'password' => 'required',
         // 'address'  => 'required',
@@ -135,6 +135,16 @@ class UserModel extends Model
             $data['image'] = $image;
         }
         return $model->update($id, $data);
+    }
+
+    public function isUniqueCode($model, $uniqueCode, $id)
+    {
+        $model->where('email', $uniqueCode);
+        if ($id != null) {
+            $model->where($this->primaryKey . ' !=', $id);
+        }
+        $result = $model->findAll();
+        return count($result);
     }
 
 }

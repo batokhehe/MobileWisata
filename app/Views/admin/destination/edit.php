@@ -72,6 +72,7 @@
                     aria-describedby="error-image_portrait">
                     <span class="error" id="error-image_portrait" style="color:red;">
                     </span>
+                    <img id="image_portrait_view" style="width: 100px">
                 </div>
                 <div class="form-group">
                     <label class="control-label">Image Landscape</label>
@@ -81,6 +82,7 @@
                     aria-describedby="error-image_landscape">
                     <span class="error" id="error-image_landscape" style="color:red;">
                     </span>
+                    <img id="image_landscape_view" style="width: 100px">
                 </div>
                 <div class="form-group">
                     <label class="control-label">Category</label>

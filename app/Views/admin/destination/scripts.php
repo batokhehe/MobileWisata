@@ -11,7 +11,27 @@
         });
     }
 
+     function readURL(input, target) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var num = $(input).attr('class').split('-')[2];
+                $(target).attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
     $(document).ready(function() {
+        $('#image_portrait').change(function(){
+            readURL(this, '#image_portrait_view');
+        });
+
+        $('#image_landscape').change(function(){
+            readURL(this, '#image_landscape_view');
+        });
+        
         $.ajax({
             url: "<?php echo base_url() . '/api/category' ?>",
             type: 'get',
