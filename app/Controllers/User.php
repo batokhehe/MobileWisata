@@ -108,6 +108,7 @@ class User extends BaseController
             'phone'    => $this->request->getVar('phone'),
             'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
             'address'  => $this->request->getVar('address'),
+            'user_id'  => $this->request->getVar('user_id'),
         ];
 
         $userModel->insert($data);
@@ -414,14 +415,13 @@ class User extends BaseController
             return $this->response->setStatusCode(500)->setJSON($response);
         }
 
-
         $userModel = new UserModel();
         if ($userModel->isUniqueCode($userModel, $this->request->getVar('email'), $this->user->data->id) > 0) {
             return $this->response->setStatusCode(500)->setJSON([
                 'status'   => 500,
                 'error'    => true,
                 'messages' => 'Email sudah terpakai',
-                'data'    => new \stdClass,
+                'data'     => new \stdClass,
             ]);
         }
 
@@ -471,7 +471,7 @@ class User extends BaseController
 
             return $this->respondCreated($response);
         } else {
-            $tmp      = $userModel->errors();
+            $tmp = $userModel->errors();
             return $this->response->setStatusCode(500)->setJSON([
                 'status'  => 500,
                 'error'   => true,
@@ -817,23 +817,25 @@ class User extends BaseController
             return $this->response->setStatusCode(500)->setJSON($response);
         }
 
-        $userModel = new UserModel();
+        $userModel   = new UserModel();
         $is_register = 0;
 
         if (!$userModel->where('email', $this->request->getVar('email'))->first()) {
             $userModel = new UserModel();
 
             $data = [
-                'name'     => $this->request->getVar('email'),
-                'email'    => $this->request->getVar('email'),
-                'user_id'  => $this->request->getVar('user_id'),
-                'phone'    => $this->request->getVar('phone'),
-                'password' => password_hash('wisata', PASSWORD_DEFAULT),
-                'address'  => $this->request->getVar('address'),
+                'email'       => $this->request->getVar('email'),
+                'user_id'     => $this->request->getVar('user_id'),
+                'is_register' => 1,
             ];
 
-            $userModel->insert($data);
-            $is_register = 1;
+            $response = [
+                'status'  => 200,
+                'error'   => false,
+                'message' => 'Login Google, user register',
+                'data'    => $data,
+            ];
+            return $this->respondCreated($response);
         }
 
         $userdata = $userModel->where('email', $this->request->getVar('email'))->first();
@@ -856,9 +858,9 @@ class User extends BaseController
                     'data' => $userdata,
                 );
 
-                $data  = $userdata;
+                $data                = $userdata;
                 $data['is_register'] = $is_register;
-                $token = JWT::encode($payload, $key);
+                $token               = JWT::encode($payload, $key);
                 unset($data['password']);
 
                 $response = [
