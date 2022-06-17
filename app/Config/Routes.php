@@ -42,6 +42,7 @@ $routes->group('api', function ($routes) {
     $routes->post('register', 'User::register');
     $routes->post('login', 'User::login');
     $routes->post('login/google', 'User::login_google');
+    $routes->post('login/facebook', 'User::login_facebook');
     $routes->get('profile', 'User::details');
     $routes->post('change-profile', 'User::change_profile');
     $routes->post('change-password', 'User::change_password');

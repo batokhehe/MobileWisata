@@ -202,7 +202,7 @@ class User extends BaseController
                         'message' => 'Incorrect details',
                         'data'    => new \stdClass,
                     ];
-                    return $this->respondCreated($response);
+                    return $this->response->setStatusCode(500)->setJSON($response);
                 }
             } else {
                 $response = [
@@ -211,7 +211,7 @@ class User extends BaseController
                     'message' => 'User not found',
                     'data'    => new \stdClass,
                 ];
-                return $this->respondCreated($response);
+                return $this->response->setStatusCode(500)->setJSON($response);
             }
         }
     }
@@ -879,7 +879,7 @@ class User extends BaseController
                     'message' => 'Incorrect details',
                     'data'    => new \stdClass,
                 ];
-                return $this->respondCreated($response);
+                return $this->response->setStatusCode(500)->setJSON($response);
             }
         } else {
 
@@ -889,7 +889,111 @@ class User extends BaseController
                 'message' => 'Incorrect details',
                 'data'    => new \stdClass,
             ];
+            return $this->response->setStatusCode(500)->setJSON($response);
+        }
+    }
+
+    public function login_facebook()
+    {
+        $rules = [
+            'email'   => 'required|min_length[6]',
+            'user_id' => 'required',
+        ];
+
+        $messages = [
+            'email'   => [
+                'required' => 'Email is required',
+            ],
+            'user_id' => [
+                'required' => 'User ID is required',
+            ],
+        ];
+
+        if (!$this->validate($rules, $messages)) {
+
+            $tmp      = $this->validator->getErrors();
+            $response = [
+                'status'  => 500,
+                'error'   => true,
+                'message' => reset($tmp),
+                'data'    => new \stdClass,
+            ];
+            return $this->response->setStatusCode(500)->setJSON($response);
+        }
+
+        $userModel   = new UserModel();
+        $is_register = 0;
+
+        if (!$userModel->where('email', $this->request->getVar('email'))->first()) {
+            $userModel = new UserModel();
+
+            $data = [
+                'email'       => $this->request->getVar('email'),
+                'user_id'     => $this->request->getVar('user_id'),
+                'is_register' => 1,
+            ];
+
+            $response = [
+                'status'  => 200,
+                'error'   => false,
+                'message' => 'Login Facebook, user register',
+                'data'    => $data,
+            ];
             return $this->respondCreated($response);
+        }
+
+        $userdata = $userModel->where('email', $this->request->getVar('email'))->first();
+
+        if (!empty($userdata)) {
+            if (!empty($userdata['user_id']) && $this->request->getVar('user_id') == $userdata['user_id']) {
+
+                $key = $this->getKey();
+
+                $iat = time(); // current timestamp value
+                $nbf = $iat + 10;
+                $exp = $iat + 3600 * 100000;
+
+                $payload = array(
+                    'iss'  => 'The_claim',
+                    'aud'  => 'The_Aud',
+                    'iat'  => $iat, // issued at
+                    'nbf'  => $nbf, //not before in seconds
+                    'exp'  => $exp, // expire time in seconds
+                    'data' => $userdata,
+                );
+
+                $data                = $userdata;
+                $data['is_register'] = $is_register;
+                $token               = JWT::encode($payload, $key);
+                unset($data['password']);
+
+                $response = [
+                    'status'  => 200,
+                    'error'   => false,
+                    'message' => 'User logged In successfully',
+                    'data'    => $data,
+                ];
+
+                return $this->response->setHeader('AuthToken', $token)->setJSON($response);
+            } else {
+
+                $response = [
+                    'status'  => 500,
+                    'error'   => true,
+                    'message' => 'Incorrect details',
+                    'data'    => new \stdClass,
+                ];
+                return $this->response->setStatusCode(500)->setJSON($response);
+            }
+        } else {
+
+            $response = [
+                'status'  => 500,
+                'error'   => true,
+                'message' => 'Incorrect details',
+                'data'    => new \stdClass,
+            ];
+            return $this->response->setStatusCode(500)->setJSON($response);
         }
     }
 

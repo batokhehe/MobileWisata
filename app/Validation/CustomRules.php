@@ -32,7 +32,8 @@ class CustomRules
     public function is_user_exists($id)
     {
         $model = new UserModel();
-        $data  = $model->where([$model->primaryKey => $id, 'deleted_at' => null])->findAll();
+        $data  = $model->where([$model->primaryKey => $id])->findAll();
+        // $data  = $model->where([$model->primaryKey => $id, 'deleted_at' => null])->findAll();
         if (count($data) > 0) {
             return true;
         } else {
