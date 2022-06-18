@@ -23,7 +23,8 @@ class UserModel extends Model
         'password',
         'address',
         'forgot_password_code',
-        'user_id',
+        'google_user_id',
+        'facebook_user_id',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -97,7 +98,7 @@ class UserModel extends Model
     {
         $model = new UserModel();
         return $model->where(['forgot_password_code' => $id])->where(['deleted_at' => null])->first();
-    }    
+    }
 
     public static function softDelete($id, $model, $user)
     {
@@ -109,24 +110,28 @@ class UserModel extends Model
     public static function createNew($model, $request, $image, $password, $user)
     {
         return $model->insert([
-            'name'       => $request->getVar('name'),
-            'email'      => $request->getVar('email'),
-            'phone'      => $request->getVar('phone'),
-            'image'      => $image,
-            'password'   => $password,
-            'address'    => $request->getVar('address'),
-            'created_at' => date('Y-m-d H:i:s'),
+            'name'             => $request->getVar('name'),
+            'email'            => $request->getVar('email'),
+            'phone'            => $request->getVar('phone'),
+            'image'            => $image,
+            'password'         => $password,
+            'address'          => $request->getVar('address'),
+            'google_user_id'   => $request->getVar('google_user_id'),
+            'facebook_user_id' => $request->getVar('facebook_user_id'),
+            'created_at'       => date('Y-m-d H:i:s'),
         ]);
     }
 
     public static function updateData($id, $model, $request, $image, $password, $user)
     {
         $data = [
-            'name'       => $request->getVar('name'),
-            'email'      => $request->getVar('email'),
-            'phone'      => $request->getVar('phone'),
-            'address'    => $request->getVar('address'),
-            'updated_at' => date('Y-m-d H:i:s'),
+            'name'             => $request->getVar('name'),
+            'email'            => $request->getVar('email'),
+            'phone'            => $request->getVar('phone'),
+            'address'          => $request->getVar('address'),
+            'google_user_id'   => $request->getVar('google_user_id'),
+            'facebook_user_id' => $request->getVar('facebook_user_id'),
+            'updated_at'       => date('Y-m-d H:i:s'),
         ];
         if ($password != '') {
             $data['password'] = $password;

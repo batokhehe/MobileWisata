@@ -103,12 +103,13 @@ class User extends BaseController
         $userModel = new UserModel();
 
         $data = [
-            'name'     => $this->request->getVar('name'),
-            'email'    => $this->request->getVar('email'),
-            'phone'    => $this->request->getVar('phone'),
-            'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
-            'address'  => $this->request->getVar('address'),
-            'user_id'  => $this->request->getVar('user_id'),
+            'name'             => $this->request->getVar('name'),
+            'email'            => $this->request->getVar('email'),
+            'phone'            => $this->request->getVar('phone'),
+            'password'         => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
+            'address'          => $this->request->getVar('address'),
+            'google_user_id'   => $this->request->getVar('google_user_id'),
+            'facebook_user_id' => $this->request->getVar('facebook_user_id'),
         ];
 
         $userModel->insert($data);
@@ -792,16 +793,16 @@ class User extends BaseController
     public function login_google()
     {
         $rules = [
-            'email'   => 'required|min_length[6]',
-            'user_id' => 'required',
+            'email'          => 'required|min_length[6]',
+            'google_user_id' => 'required',
         ];
 
         $messages = [
-            'email'   => [
+            'email'          => [
                 'required' => 'Email is required',
             ],
-            'user_id' => [
-                'required' => 'User ID is required',
+            'google_user_id' => [
+                'required' => 'Google User ID is required',
             ],
         ];
 
@@ -824,9 +825,9 @@ class User extends BaseController
             $userModel = new UserModel();
 
             $data = [
-                'email'       => $this->request->getVar('email'),
-                'user_id'     => $this->request->getVar('user_id'),
-                'is_register' => 1,
+                'email'          => $this->request->getVar('email'),
+                'google_user_id' => $this->request->getVar('google_user_id'),
+                'is_register'    => 1,
             ];
 
             $response = [
@@ -841,7 +842,7 @@ class User extends BaseController
         $userdata = $userModel->where('email', $this->request->getVar('email'))->first();
 
         if (!empty($userdata)) {
-            if (!empty($userdata['user_id']) && $this->request->getVar('user_id') == $userdata['user_id']) {
+            if (!empty($userdata['google_user_id']) && $this->request->getVar('google_user_id') == $userdata['google_user_id']) {
 
                 $key = $this->getKey();
 
@@ -896,16 +897,16 @@ class User extends BaseController
     public function login_facebook()
     {
         $rules = [
-            'email'   => 'required|min_length[6]',
-            'user_id' => 'required',
+            'email'            => 'required|min_length[6]',
+            'facebook_user_id' => 'required',
         ];
 
         $messages = [
-            'email'   => [
+            'email'            => [
                 'required' => 'Email is required',
             ],
-            'user_id' => [
-                'required' => 'User ID is required',
+            'facebook_user_id' => [
+                'required' => 'Facebook User ID is required',
             ],
         ];
 
@@ -928,9 +929,9 @@ class User extends BaseController
             $userModel = new UserModel();
 
             $data = [
-                'email'       => $this->request->getVar('email'),
-                'user_id'     => $this->request->getVar('user_id'),
-                'is_register' => 1,
+                'email'            => $this->request->getVar('email'),
+                'facebook_user_id' => $this->request->getVar('facebook_user_id'),
+                'is_register'      => 1,
             ];
 
             $response = [
@@ -945,7 +946,7 @@ class User extends BaseController
         $userdata = $userModel->where('email', $this->request->getVar('email'))->first();
 
         if (!empty($userdata)) {
-            if (!empty($userdata['user_id']) && $this->request->getVar('user_id') == $userdata['user_id']) {
+            if (!empty($userdata['google_user_id']) || $this->request->getVar('facebook_user_id') == $userdata['facebook_user_id']) {
 
                 $key = $this->getKey();
 
@@ -961,6 +962,9 @@ class User extends BaseController
                     'exp'  => $exp, // expire time in seconds
                     'data' => $userdata,
                 );
+
+                $userdata['facebook_user_id'] = $this->request->getVar('facebook_user_id');
+                $userModel->update($userdata['id'], $userdata);
 
                 $data                = $userdata;
                 $data['is_register'] = $is_register;
