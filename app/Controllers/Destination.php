@@ -105,7 +105,7 @@ class Destination extends BaseController
 
         $result['favorite'] = FavoriteModel::findByIdWithUser($id, $this->user->data->id);
         $result['rate']     = RateReviewModel::findAverageByDestinationId($id);
-        $result['category'] = CategoryModel::findById($id)['name'];
+        $result['category'] = CategoryModel::findById($result['category_id'])['name'];
         $result['media']    = MediaModel::findByDestinationId($id);
 
         $client = \Config\Services::curlrequest();

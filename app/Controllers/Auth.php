@@ -115,7 +115,12 @@ class Auth extends AdminBaseController
                 //if the login is successful
                 //redirect them back to the home page
                 // $this->session->setFlashdata('message', $this->ionAuth->messages());
-                return redirect()->to('/admin')->withCookies();
+                $this->session->set('is_first_login', 'true');
+                if ($this->session->user_id == '1') {
+                    return redirect()->to('/admin/user')->withCookies();
+                } else {
+                    return redirect()->to('/admin')->withCookies();
+                }
             } else {
                 // if the login was un-successful
                 // redirect them back to the login page

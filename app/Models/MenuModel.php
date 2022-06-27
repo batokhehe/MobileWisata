@@ -34,6 +34,35 @@ class MenuModel extends Model
         return $query->getRow();
     }
 
+    public function findGroupID($id){
+        $builder = $this->db->table('users_groups');
+        $builder->select('*');
+        $builder->where('user_id', $id);
+        $query = $builder->get();
+
+        return $query->getRow()->group_id;
+    }    
+
+    public function joinGroupMenu($session){
+        $groups_menus = 'groups_menus';
+        if ($session->has('email')) {
+
+            $group_id = $this->findGroupID($session->user_id);
+
+            $builder = $this->db->table($this->table);
+            $builder->distinct($this->table.'.id');
+            $builder->select($this->table.'.slug');
+            $builder->select('gm.access');
+            $builder->join($groups_menus . ' as gm', 'gm.menu_id = ' . $this->table . '.id', 'left');
+            $builder->where('gm.group_id', $group_id);
+            $query = $builder->get();
+
+            return $query->getResult();
+        } else {
+            return [];
+        }
+    }
+
     public function findMenuId($value)
     {
         $this->db->select('*');

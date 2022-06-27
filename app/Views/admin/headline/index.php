@@ -55,7 +55,6 @@
             </div>
             <!-- /.card-body -->
             <div class="card-footer">
-                <a href="<?php echo base_url('admin/' . $slug) ?>" class="btn bg-gradient-default"><i class="fa fa-times"></i> &nbsp;Close</a>
                 <button type="submit" class="btn bg-gradient-primary float-right"><i class="fa fa-save"></i> &nbsp;Save</button>
             </div>
             <!-- /.card-footer-->

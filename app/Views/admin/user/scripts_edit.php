@@ -1,7 +1,23 @@
 <script type="application/javascript">
     var table;
 
+    function readURL(input, target) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var num = $(input).attr('class').split('-')[2];
+                $(target).attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
     $(document).ready(function() {
+
+        $('#image').change(function(){
+            readURL(this, '#image_view');
+        });
 
         $.ajax({
             url: "<?php echo base_url() . '/api/user/' . $id ?>",
@@ -13,6 +29,7 @@
                 $('#email').val(data.email);
                 $('#address').val(data.address);
                 $('#phone').val(data.phone);
+                $('#image_view').attr('src', data.image);
             }
         });
 

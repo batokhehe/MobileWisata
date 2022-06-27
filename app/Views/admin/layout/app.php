@@ -75,13 +75,27 @@
       $('.summernote').summernote();
     });
 
-    $(document).ajaxStart(function() {
-      $("#loading").show();
-    });
+    <?php
+    $session = \Config\Services::session();
+    if ($session->get('is_first_login') != 'true') {?>
+      $(document).ajaxStart(function() {
+        $("#loading").show();
+      });
 
-    $(document).ajaxStop(function() {
-      $("#loading").hide();
-    });
+      $(document).ajaxStop(function() {
+        $("#loading").hide();
+      });
+    <?php }
+    if ($session->get('is_first_login') == 'true') {?>
+      $("#loading").show();
+      setTimeout(function(){
+        $("#loading").hide();
+      },10000);
+      <?php
+      $session->set('is_first_login', 'false');
+    }
+
+    ?>
   </script>
 </body>
 </html>

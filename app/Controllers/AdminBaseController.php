@@ -31,6 +31,7 @@ class AdminBaseController extends Controller
 
         $this->template_admin = new Template_admin();
         $this->ionAuth        = new IonAuth();
+        $this->session = \Config\Services::session(); 
     }
 
 }

@@ -71,6 +71,7 @@
                     aria-describedby="error-image">
                     <span class="error" id="error-image" style="color:red;">
                     </span>
+                    <img id="image_view" style="width: 100px">
                 </div>
             </div>
             <!-- /.card-body -->
