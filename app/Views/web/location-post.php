@@ -57,33 +57,33 @@
                     <h2 class="mb-4">Reviews</h2>
                     <div class="user-reviews">
                         <?php foreach ($rate as $r) { ?>
-                        <div class="user-post">
-                            <div class="user-post-head">
-                                <img src="<?php echo $r->image ?>" class="img-fluid">
-                                <div class="user-data">
-                                    <h5><?php echo $r->name ?></h5>
-                                    <h6>Local Guide • <?php echo $r->total_review ?> reviews</h6>
-                                </div>
-                                <div class="user-menu">
-                                    <div class="dropdown">
-                                        <i class="las la-ellipsis-v"></i>
-                                        <ul>
-                                            <li><a href="#">Flag as inappropiate</a></li>
-                                        </ul>
+                            <div class="user-post">
+                                <div class="user-post-head">
+                                    <img src="<?php echo $r->image ?>" class="img-fluid">
+                                    <div class="user-data">
+                                        <h5><?php echo $r->name ?></h5>
+                                        <h6>Local Guide • <?php echo $r->total_review ?> reviews</h6>
+                                    </div>
+                                    <div class="user-menu">
+                                        <div class="dropdown">
+                                            <i class="las la-ellipsis-v"></i>
+                                            <ul>
+                                                <li><a href="#">Flag as inappropiate</a></li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="user-post-body">
-                                <div class="rating-star">
-                                    <input class="star-rating" value="<?php echo $r->rate ?>" />
-                                    <span class="ml-2"><?php echo $r->created_at ?></span>
-                                </div>
-                                <div class="read-more" onclick="this.classList.add('expanded')">
-                                    <div class="content">
-                                        <p><?php echo $r->review ?></p>
+                                <div class="user-post-body">
+                                    <div class="rating-star">
+                                        <input class="star-rating" value="<?php echo $r->rate ?>" />
+                                        <span class="ml-2"><?php echo $r->created_at ?></span>
                                     </div>
-                                    <span class="trigger">+ read more</span>
-                                </div>
+                                    <div class="read-more" onclick="this.classList.add('expanded')">
+                                        <div class="content">
+                                            <p><?php echo $r->review ?></p>
+                                        </div>
+                                        <span class="trigger">+ read more</span>
+                                    </div>
                                 <!-- <div class="image-post">
                                     <a class="lightbox" href="images/article-01.jpg" data-lightbox-anima="fade-in">
                                         <img src="images/article-01.jpg" class="img-fluid">
@@ -106,72 +106,73 @@
                             </div>
                         </div>
                     <?php } ?>
+                </div>
+            </div>
+
+            <div class="col-lg-6 hr-line m-0">
+                <h2 class="mb-4">Review summary</h2>
+                <div class="d-flex user-reviews-summary">
+                    <div class="flex-fill progress-line py-2">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="<?php echo $summary->five ?>" aria-valuemin="0" aria-valuemax="<?php echo $summary->total_review ?>" style="width: 75%"><span>5</span></div>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="<?php echo $summary->four ?>" aria-valuemin="0" aria-valuemax="<?php echo $summary->total_review ?>" style="width: 75%"><span>4</span></div>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="<?php echo $summary->three ?>" aria-valuemin="0" aria-valuemax="<?php echo $summary->total_review ?>" style="width: 75%"><span>3</span></div>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="<?php echo $summary->two ?>" aria-valuemin="0" aria-valuemax="<?php echo $summary->total_review ?>" style="width: 75%"><span>2</span></div>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="<?php echo $summary->one ?>" aria-valuemin="0" aria-valuemax="<?php echo $summary->total_review ?>" style="width: 75%"><span>1</span></div>
+                        </div>
+                    </div>
+                    <div class="ml-4 progress-sum-star">
+                        <div class="rating-star">
+                            <input class="star-rating-summary" value="<?php echo $summary->average ?>" />
+                            <span class="reviews"><?php echo $summary->total_review ?> reviews</span>
+                        </div>
                     </div>
                 </div>
-
-                <div class="col-lg-6 hr-line m-0">
-                    <h2 class="mb-4">Review summary</h2>
-                    <div class="d-flex user-reviews-summary">
-                        <div class="flex-fill progress-line py-2">
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="<?php echo $summary->five ?>" aria-valuemin="0" aria-valuemax="<?php echo $summary->total_review ?>" style="width: 75%"><span>5</span></div>
-                            </div>
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="<?php echo $summary->four ?>" aria-valuemin="0" aria-valuemax="<?php echo $summary->total_review ?>" style="width: 75%"><span>4</span></div>
-                            </div>
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="<?php echo $summary->three ?>" aria-valuemin="0" aria-valuemax="<?php echo $summary->total_review ?>" style="width: 75%"><span>3</span></div>
-                            </div>
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="<?php echo $summary->two ?>" aria-valuemin="0" aria-valuemax="<?php echo $summary->total_review ?>" style="width: 75%"><span>2</span></div>
-                            </div>
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="<?php echo $summary->one ?>" aria-valuemin="0" aria-valuemax="<?php echo $summary->total_review ?>" style="width: 75%"><span>1</span></div>
-                            </div>
-                        </div>
-                        <div class="ml-4 progress-sum-star">
-                            <div class="rating-star">
-                                <input class="star-rating-summary" value="<?php echo $summary->average ?>" />
-                                <span class="reviews"><?php echo $summary->total_review ?> reviews</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- <div class="user-reviews">
+                <form class="" id="formUserReview" name="formUserReview" action="">
+                    <div class="user-reviews">
                         <div class="user-post">
                             <div class="user-post-head mb-2">
-                                <img src="images/elements/user.png" class="img-fluid">
+                                <img src="" class="img-fluid imgUserData">
                                 <div class="user-data">
-                                    <h5>User Me</h5>
+                                    <h5 class="nameUserData"></h5>
                                     <h6>Posting publicly</h6>
                                 </div>
                             </div>
                             <div class="user-post-body">
                                 <div class="rating-star mt-2">
-                                    <input required id="rating-input" />
+                                    <input required id="rating-input" name="rate" />
                                 </div>
-                                <form class="">
-                                    <textarea rows="15" placeholder="Share details of your own experience at this place"></textarea>
-                                    <span>Add image</span>
-                                    <div class="upload-box">
-                                        <div class="upload-img-wrap"></div>
-                                        <div class="upload-btn-box">
-                                            <label class="btn upload-btn">
-                                                <i class="las la-camera-retro"></i>
-                                                <input type="file" multiple="" data-max_length="20" class="upload-inputfile">
-                                            </label>
-                                        </div>
+                                <input type="hidden" id="destination_id" name="destination_id" value="<?php echo $destination->id ?>">
+                                <textarea id="review" name="review" rows="15" placeholder="Share details of your own experience at this place"></textarea>
+                                <!-- <span>Add image</span>
+                                <div class="upload-box">
+                                    <div class="upload-img-wrap"></div>
+                                    <div class="upload-btn-box">
+                                        <label class="btn upload-btn">
+                                            <i class="las la-camera-retro"></i>
+                                            <input type="file" multiple="" data-max_length="20" class="upload-inputfile">
+                                        </label>
                                     </div>
-                                    <div class="float-right">
-                                        <button class="btn btn-sm btn-circle btn-outline-primary my-0">Cancel</button>
-                                        <button class="btn btn-sm btn-circle my-0 ml-2">Post</button>
-                                    </div>
-                                </form>
+                                </div> -->
+                                <div class="float-right">
+                                    <button class="btn btn-sm btn-circle btn-outline-primary my-0">Cancel</button>
+                                    <button type="submit" class="btn btn-sm btn-circle my-0 ml-2">Post</button>
+                                </div>
                             </div>
                         </div>
-                    </div> -->
-                </div>
+                    </div>
+                </form>
             </div>
-            <hr class="space" />
         </div>
-    </section>
+        <hr class="space" />
+    </div>
+</section>
 </main>

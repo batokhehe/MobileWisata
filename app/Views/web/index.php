@@ -86,7 +86,7 @@
                                         </div>
                                         <div class="cnt-info">
                                             <div><a href="#"><span>Rute</span><i class="las la-directions"></i></a></div>
-                                            <div><a href="#"><span>Simpan</span><i class="las la-bookmark"></i></a></div>
+                                            <div><a onclick="return addToFavorite(<?php echo $p->id ?>)"><span>Simpan</span><i class="las la-bookmark"></i></a></div>
                                             <div><a href="#"><span>Bagikan</span><i class="las la-share"></i></a></div>
                                         </div>
                                         <p>
@@ -502,7 +502,7 @@
                         <tbody>
                             <tr>
                                 <?php foreach ($guide as $g) { ?>
-                                 <td>
+                                   <td>
                                     <a href="#">
                                         <div class="icon-box icon-box-top align-center">
                                             <div class="thumb-img-box" style="background: url('<?php echo $g->image ?>');">
@@ -533,7 +533,7 @@
                     </button>
                 </div>
                 <div class="modal-body px-0">
-                    <form action="" class="">
+                    <form action="" class="" id="formRegister">
                         <div class="row m-0">
                             <div class="col-lg-6 form-group">
                                 <label>Name</label>
@@ -581,8 +581,8 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body px-0">
-                    <form action="" class="">
+                <form action="" class="" id="formLogin">
+                    <div class="modal-body px-0">
                         <div class="row m-0">
                             <div class="col-lg-12 form-group mt-0">
                                 <label>Email</label>
@@ -593,17 +593,13 @@
                                 <input id="password-login" name="password" placeholder="Password" type="password" class="input-text" required>
                             </div>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer d-flex justify-content-between">
-                    <div class="form-checkbox justify-content-between">
-                        <input type="checkbox" id="check" name="check" value="check" required>
-                        <label for="check" class="pl-2 d-inline">Remember me</label>
                     </div>
-                    <div class="flex-fill text-right mt-2">
-                        <button class="btn btn-sm" type="submit">Submit</button>
+                    <div class="modal-footer d-flex justify-content-between">
+                        <div class="flex-fill text-right mt-2">
+                            <button class="btn btn-sm" type="submit">Submit</button>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>

@@ -91,15 +91,15 @@ class Destination extends BaseController
      */
     public function show($id = null)
     {
-        if (empty($this->user)) {
-            $response = [
-                'status'  => 401,
-                'error'   => true,
-                'message' => 'Access denied',
-                'data'    => new \stdClass,
-            ];
-            return $this->respondCreated($response);
-        }
+        // if (empty($this->user)) {
+        //     $response = [
+        //         'status'  => 401,
+        //         'error'   => true,
+        //         'message' => 'Access denied',
+        //         'data'    => new \stdClass,
+        //     ];
+        //     return $this->respondCreated($response);
+        // }
 
         $result = DestinationModel::findById($id);
 

@@ -37,7 +37,7 @@ class RateReviewModel extends Model
         'rate'           => 'required',
         'review'         => 'required',
         'destination_id' => 'required|is_destination_exists[destination_id]',
-        'user_id'        => 'required|is_user_exists[user_id]',
+        // 'user_id'        => 'required|is_user_exists[user_id]',
     ];
     protected $validationMessages = [
         'rate'           => [

@@ -39,16 +39,16 @@
                     <li class="dropdown user-menu">
                         <a href="account.html">Akun</a>
                         <ul>
-                            <li>
+                            <li id="userDataHeader">
                                 <div>
-                                    <img class="user-picture img-fluid" src="<?php echo base_url('assets/web/images/elements/user.png') ?>" />
-                                    <p>Jhon Doe Sriningsih Widjayanto</p>
+                                    <img class="user-picture img-fluid imgUserData" src="" />
+                                    <p class="nameUserData"></p>
                                 </div>
                             </li>
-                            <li><a href="account.html">Account</a></li>
-                            <li><a href="#" data-toggle="modal" data-target="#regModal">Logout</a></li>
-                            <li><a href="#loginModal" data-toggle="modal" data-target="#loginModal">Login</a></li>
-                            <li><a href="#regModal" data-toggle="modal" data-target="#regModal">Register</a></li>
+                            <li><a id="btnAccount" href="account.html">Account</a></li>
+                            <li><a id="btnLogout" href="#" data-toggle="modal">Logout</a></li>
+                            <li><a id="btnLogin" href="#loginModal" data-toggle="modal" data-target="#loginModal">Login</a></li>
+                            <li><a id="btnRegister" href="#regModal" data-toggle="modal" data-target="#regModal">Register</a></li>
                         </ul>
                     </li>
                 </ul>
